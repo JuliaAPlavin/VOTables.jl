@@ -8,56 +8,63 @@ using Accessors #Extra  # Extra - for Dictionaries support
 
 
 read(votfile) = let
-	tblx = tblxml(votfile)
-	_fieldattrs = fieldattrs(tblx)
-	res = @p _fieldattrs |> map(Symbol(_["name"]) => Union{vo2jltype(_),Missing}[]) |> dictionary |> DictArray
-	_filltable!(res, tblx)
-	@modify(col -> map(identity, col), res |> Properties())
+    tblx = tblxml(votfile)
+    _fieldattrs = fieldattrs(tblx)
+    @p let
+        _fieldattrs
+        map(Symbol(_["name"]) => Union{vo2jltype(_),Missing}[])
+        dictionary
+        DictArray
+        _filltable!(__, tblx)
+        @modify(col -> map(identity, col), __ |> Properties())  # narrow types, removing Missing unless actually present
+    end
 end
 
-_filltable!(res, tblx) = @p let
-	tblx
-	@aside ns = ["ns" => namespace(__)]
-	findall("ns:DATA/ns:TABLEDATA", __, ns)
-	only
-	findall("ns:TR", __, ns)
-	foreach() do tr
-		map(AbstractDictionary(res), eachelement(tr)) do col, td
-			@assert nodename(td) == "TD"
-			val = _parse(eltype(col), nodecontent(td))
-			push!(col, val)
-		end
-	end
+function _filltable!(res, tblx)
+    @p let
+        tblx
+        @aside ns = ["ns" => namespace(__)]
+        findall("ns:DATA/ns:TABLEDATA", __, ns)
+        only
+        findall("ns:TR", __, ns)
+        foreach() do tr
+            map(AbstractDictionary(res), eachelement(tr)) do col, td
+                @assert nodename(td) == "TD"
+                val = _parse(eltype(col), nodecontent(td))
+                push!(col, val)
+            end
+        end
+    end
+    return res
 end
-
 
 tblxml(votfile) = @p let
-	Base.read(votfile, String)
-	parsexml
-	root
-	@aside ns = ["ns" => namespace(__)]
-	findall("ns:RESOURCE/ns:TABLE", __, ns)
-	only
+    Base.read(votfile, String)
+    parsexml
+    root
+    @aside ns = ["ns" => namespace(__)]
+    findall("ns:RESOURCE/ns:TABLE", __, ns)
+    only
 end
 
 description(tblxml) = @p let
-	tblxml
-	@aside ns = ["ns" => namespace(__)]
-	findall("ns:DESCRIPTION", __, ns)
-	only
-	nodecontent
+    tblxml
+    @aside ns = ["ns" => namespace(__)]
+    findall("ns:DESCRIPTION", __, ns)
+    only
+    nodecontent
 end
 
 fieldattrs(tblxml) = @p let
-	tblxml
-	@aside ns = ["ns" => namespace(__)]
-	findall("ns:FIELD", __, ns)
-	map() do fieldxml
-		attrs = @p attributes(fieldxml) |> map(nodename(_) => nodecontent(_)) |> dictionary
-		desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> only |> nodecontent
-		insert!(attrs, "description", desc)
-		return attrs
-	end
+    tblxml
+    @aside ns = ["ns" => namespace(__)]
+    findall("ns:FIELD", __, ns)
+    map() do fieldxml
+        attrs = @p attributes(fieldxml) |> map(nodename(_) => nodecontent(_)) |> dictionary
+        desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> only |> nodecontent
+        insert!(attrs, "description", desc)
+        return attrs
+    end
 end
 
 TYPE_VO_TO_JL = Dict(
@@ -76,15 +83,15 @@ TYPE_VO_TO_JL = Dict(
 )
 
 function vo2jltype(attrs)
-	if get(attrs, "arraysize", "1") == "1"
-		TYPE_VO_TO_JL[attrs["datatype"]]
-	elseif attrs["datatype"] == "char"
-		@assert occursin(r"^\d+$", attrs["arraysize"])
-		String
-	else
-		@assert occursin(r"^\d+$", attrs["arraysize"])
-		Vector{TYPE_VO_TO_JL[attrs["datatype"]]}
-	end
+    if get(attrs, "arraysize", "1") == "1"
+        TYPE_VO_TO_JL[attrs["datatype"]]
+    elseif attrs["datatype"] == "char"
+        @assert occursin(r"^\d+$", attrs["arraysize"])
+        String
+    else
+        @assert occursin(r"^\d+$", attrs["arraysize"])
+        Vector{TYPE_VO_TO_JL[attrs["datatype"]]}
+    end
 end
 
 
