@@ -15,7 +15,7 @@ function read(votfile; postprocess=true, unitful=false)
     @p let
         _fieldattrs
         map(Symbol(_[:name]) => Union{vo2jltype(_),Missing}[])
-        dictionary
+        Dictionary(first.(__), last.(__))
         DictArray
         _filltable!(__, tblx)
         @modify(col -> map(identity, col), __ |> Properties())  # narrow types, removing Missing unless actually present
