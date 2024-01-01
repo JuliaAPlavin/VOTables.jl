@@ -4,21 +4,47 @@ using EzXML
 using DictArrays
 using Dictionaries
 using DataPipes
-using Accessors #Extra  # Extra - for Dictionaries support
+using Accessors
+using Dates
 
 
-read(votfile) = let
+function read(votfile; postprocess=true, unitful=false)
     tblx = tblxml(votfile)
     _fieldattrs = fieldattrs(tblx)
     @p let
         _fieldattrs
-        map(Symbol(_["name"]) => Union{vo2jltype(_),Missing}[])
+        map(Symbol(_[:name]) => Union{vo2jltype(_),Missing}[])
         dictionary
         DictArray
         _filltable!(__, tblx)
         @modify(col -> map(identity, col), __ |> Properties())  # narrow types, removing Missing unless actually present
+        postprocess ? @modify(AbstractDictionary(__)) do dct
+            _fieldattrs_dct = @p _fieldattrs |> map(Symbol(_[:name]) => _) |> dictionary
+            map(pairs(dct)) do (k, col)  # XXX: need to make typestable
+                postprocess_col(col, _fieldattrs_dct[k]; unitful)
+            end
+        end : __
     end
 end
+
+function postprocess_col(col, attrs; unitful::Bool)
+    ucds = split(get(attrs, :ucd, ""), ";")
+    unit = get(attrs, :unit, nothing)
+    if "time.epoch" in ucds
+        if unit == "'Y:M:D'"
+            map(x -> parse(Date, x, dateformat"Y-m-d"), col)
+        else
+            @warn "unknown time unit" unit
+            col
+        end
+    elseif unitful && !isnothing(unit)
+        unit_viz_to_jl(col, unit)
+    else
+        col
+    end
+end
+
+unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 
 function _filltable!(res, tblx)
     @p let
@@ -60,9 +86,9 @@ fieldattrs(tblxml) = @p let
     @aside ns = ["ns" => namespace(__)]
     findall("ns:FIELD", __, ns)
     map() do fieldxml
-        attrs = @p attributes(fieldxml) |> map(nodename(_) => nodecontent(_)) |> dictionary
+        attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
         desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> only |> nodecontent
-        insert!(attrs, "description", desc)
+        insert!(attrs, :description, desc)
         return attrs
     end
 end
@@ -83,14 +109,14 @@ TYPE_VO_TO_JL = Dict(
 )
 
 function vo2jltype(attrs)
-    if get(attrs, "arraysize", "1") == "1"
-        TYPE_VO_TO_JL[attrs["datatype"]]
-    elseif attrs["datatype"] == "char"
-        @assert occursin(r"^\d+$", attrs["arraysize"])
+    if get(attrs, :arraysize, "1") == "1"
+        TYPE_VO_TO_JL[attrs[:datatype]]
+    elseif attrs[:datatype] == "char"
+        @assert occursin(r"^\d+$", attrs[:arraysize])
         String
     else
-        @assert occursin(r"^\d+$", attrs["arraysize"])
-        Vector{TYPE_VO_TO_JL[attrs["datatype"]]}
+        @assert occursin(r"^\d+$", attrs[:arraysize])
+        Vector{TYPE_VO_TO_JL[attrs[:datatype]]}
     end
 end
 
