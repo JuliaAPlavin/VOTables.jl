@@ -251,7 +251,11 @@ _parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
 _parse(::Type{T}, s) where {T} = parse(T, s)
 _parse(::Type{Char}, s) = only(s)
 _parse(::Type{String}, s) = s
-_parse(::Type{T}, s) where {T <: Complex} = @p split(s) |> complex(_parse(real(T), __[1]), _parse(real(T), __[2]))
+function _parse(::Type{T}, s) where {T <: Complex}
+    re, im, rest... = split(s)
+    @assert isempty(rest)
+    complex(_parse(real(T), re), _parse(real(T), im))
+end
 
 _unparse(::Missing) = ""
 _unparse(x::Complex) = "$(real(x)) $(imag(x))"
