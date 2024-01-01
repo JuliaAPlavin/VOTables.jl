@@ -36,4 +36,8 @@ function unit_viz_to_jl(col, viz::AbstractString)
     return postf.(col) .* u
 end
 
+
+# XXX: piracy, need to upstream
+Base.:*(::Missing, ::Unitful.MixedUnits) = missing
+
 end
