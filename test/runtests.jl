@@ -53,6 +53,25 @@ end
     @test tbl[3].logg === 25386.342f0u"cm/s^2"
 end
 
+@testitem "read 3" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/2mass.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 5
+    @test tbl[1].errPA == 76
+    @test tbl[1].JD == DateTime(1998, 9, 28, 7, 20, 55, 680)
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 5
+    @test tbl[1].errPA == 76u"°"
+    @test tbl[1].JD == DateTime(1998, 9, 28, 7, 20, 55, 680)
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles

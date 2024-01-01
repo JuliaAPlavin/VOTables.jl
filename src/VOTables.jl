@@ -34,6 +34,16 @@ function postprocess_col(col, attrs; unitful::Bool)
     if "time.epoch" in ucds
         if unit == "'Y:M:D'"
             map(x -> parse(Date, x, dateformat"Y-m-d"), col)
+        elseif unit == "d"
+            @warn "assuming julian days" column=attrs[:name]
+            map(julian2datetime, col)
+        elseif isnothing(unit)
+            try
+                map(x -> parse(Date, x, dateformat"Y-m-d"), col)
+            catch exc
+                @warn "unknown time unit" unit exc
+                col
+            end
         else
             @warn "unknown time unit" unit
             col
@@ -127,10 +137,10 @@ function vo2jltype(attrs)
     if get(attrs, :arraysize, "1") == "1"
         TYPE_VO_TO_JL[attrs[:datatype]]
     elseif attrs[:datatype] == "char"
-        @assert occursin(r"^\d+$", attrs[:arraysize])
+        @assert occursin(r"^(\d+|\*)$", attrs[:arraysize])
         String
     else
-        @assert occursin(r"^\d+$", attrs[:arraysize])
+        @assert occursin(r"^(\d+|\*)$", attrs[:arraysize])
         Vector{TYPE_VO_TO_JL[attrs[:datatype]]}
     end
 end
