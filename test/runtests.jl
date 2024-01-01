@@ -117,20 +117,23 @@ end
 
 @testitem "write" begin
     using StructArrays.Tables
+    using DictArrays, StructArrays
     using Unitful, UnitfulAngles
 
+    f = tempname()
     for tbl in [
         (a=[1,2,3], b=["xx", "y", "zzz"],),
         (a=[1.,3.,2.], b=["xx", "y", missing],),
         (bool=[false], u8=[UInt8(12)], ch=['a'], str=["xyz"], i16=[Int16(123)], i32=[Int32(123)], i64=[Int64(123)], f32=[Float32(1.23)], f64=[Float64(1.23)], f32c=[ComplexF32(1.23, 4.56)], f64c=[ComplexF64(1.23, 4.56)],),
         # (a=[1u"m"], b=[1u"°"], c=[1u"arcsecond/m^2"]),
     ]
-        f = tempname()
-        tbl |> VOTables.write(f)
         tbl_c = tbl |> Tables.columntable
-        read_c = VOTables.read(f; unitful=true) |> Tables.columntable
-        @test isequal(read_c, tbl_c)
-        @test map(eltype, read_c) == map(eltype, tbl_c)
+        @testset for tbl_f in (identity, rowtable, StructArray, DictArray)
+            tbl |> tbl_f |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test isequal(read_c, tbl_c)
+            @test map(eltype, read_c) == map(eltype, tbl_c)
+        end
     end
 end
 

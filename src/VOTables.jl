@@ -88,7 +88,7 @@ function write(votfile, tbl)
         end
     end
     tabledatax = addelement!(addelement!(tablex, "DATA"), "TABLEDATA")
-    for r in Tables.rows(tbl)
+    for r in Tables.rowtable(tbl)
         trx = addelement!(tabledatax, "TR")
         for val in r
             addelement!(trx, "TD", _unparse(val))
