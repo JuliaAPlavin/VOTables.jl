@@ -1,0 +1,1260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results">
+<INFO name="QUERY_STATUS" value="OK" />
+
+<INFO name="QUERY" value="select top 5 * from gaiadr3.gaia_source"><![CDATA[select top 5 * from gaiadr3.gaia_source]]></INFO>
+<INFO name="CAPTION" value="How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html"><![CDATA[How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html]]></INFO>
+<INFO name="CITATION" value="How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html" ucd="meta.bib"><![CDATA[How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html]]></INFO>
+<INFO name="PAGE" value="" />
+<INFO name="PAGE_SIZE" value="" />
+<INFO name="JOBID" value="1691200723952O"><![CDATA[1691200723952O]]></INFO>
+<INFO name="JOBNAME" value="" />
+<COOSYS ID="GAIADR3" epoch="J2016.0" system="ICRS" />
+
+<RESOURCE>
+  <COOSYS ID="t30366-coosys-1" epoch="J2016.0" system="ICRS"/>
+</RESOURCE>
+<TABLE>
+<FIELD datatype="long" name="solution_id" ucd="meta.version">
+<DESCRIPTION>Solution Identifier</DESCRIPTION>
+</FIELD>
+<FIELD ID="DESIGNATION" arraysize="*" datatype="char" name="designation" ucd="meta.id;meta.main">
+<DESCRIPTION>Unique source designation (unique across all Data Releases)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="long" name="source_id" ucd="meta.id">
+<DESCRIPTION>Unique source identifier (unique within a particular Data Release)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="long" name="random_index" ucd="meta.code">
+<DESCRIPTION>Random index for use when selecting subsets</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ref_epoch" ucd="meta.ref;time.epoch" unit="yr" utype="stc:AstroCoords.Time.TimeInstant">
+<DESCRIPTION>Reference epoch</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ra" ref="t30366-coosys-1" ucd="pos.eq.ra;meta.main" unit="deg" utype="stc:AstroCoords.Position3D.Value3.C1">
+<DESCRIPTION>Right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_error" ucd="stat.error;pos.eq.ra" unit="mas" utype="stc:AstroCoords.Position3D.Error3.C1">
+<DESCRIPTION>Standard error of right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="dec" ref="t30366-coosys-1" ucd="pos.eq.dec;meta.main" unit="deg" utype="stc:AstroCoords.Position3D.Value3.C2">
+<DESCRIPTION>Declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_error" ucd="stat.error;pos.eq.dec" unit="mas" utype="stc:AstroCoords.Position3D.Error3.C2">
+<DESCRIPTION>Standard error of declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="parallax" ucd="pos.parallax.trig" unit="mas">
+<DESCRIPTION>Parallax</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="parallax_error" ucd="stat.error;pos.parallax.trig" unit="mas">
+<DESCRIPTION>Standard error of parallax</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="parallax_over_error" ucd="stat.snr;pos.parallax.trig">
+<DESCRIPTION>Parallax divided by its standard error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pm" ucd="pos.pm;pos.eq" unit="mas.yr**-1">
+<DESCRIPTION>Total proper motion</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="pmra" ucd="pos.pm;pos.eq.ra" unit="mas.yr**-1" utype="stc:AstroCoords.Velocity3D.Value3.C1">
+<DESCRIPTION>Proper motion in right ascension direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pmra_error" ucd="stat.error;pos.pm;pos.eq.ra" unit="mas.yr**-1" utype="stc:AstroCoords.Velocity3D.Error3.C1">
+<DESCRIPTION>Standard error of proper motion in right ascension direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="pmdec" ucd="pos.pm;pos.eq.dec" unit="mas.yr**-1" utype="stc:AstroCoords.Velocity3D.Value3.C2">
+<DESCRIPTION>Proper motion in declination direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pmdec_error" ucd="stat.error;pos.pm;pos.eq.dec" unit="mas.yr**-1" utype="stc:AstroCoords.Velocity3D.Error3.C2">
+<DESCRIPTION>Standard error of proper motion in declination direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_dec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between right ascension and declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_parallax_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between right ascension and parallax</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_pmra_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between right ascension and proper motion in right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_pmdec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between right ascension and proper motion in declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_parallax_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between declination and parallax</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_pmra_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between declination and proper motion in right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_pmdec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between declination and proper motion in declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="parallax_pmra_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between parallax and proper motion in right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="parallax_pmdec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between parallax and proper motion in declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pmra_pmdec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between proper motion in right ascension and proper motion in declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_n_obs_al" ucd="meta.number">
+<DESCRIPTION>Total number of observations in the along-scan (AL) direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_n_obs_ac" ucd="meta.number">
+<DESCRIPTION>Total number of observations in the across-scan (AC) direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_n_good_obs_al" ucd="meta.number">
+<DESCRIPTION>Number of good observations in the along-scan (AL) direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_n_bad_obs_al" ucd="meta.number">
+<DESCRIPTION>Number of bad observations in the along-scan (AL) direction</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="astrometric_gof_al" ucd="stat.fit.goodness">
+<DESCRIPTION>Goodness of fit statistic of model wrt along-scan observations</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="astrometric_chi2_al" ucd="stat.fit.chi2">
+<DESCRIPTION>AL chi-square value</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="astrometric_excess_noise" ucd="stat.value" unit="mas">
+<DESCRIPTION>Excess noise of the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="astrometric_excess_noise_sig" ucd="stat.value">
+<DESCRIPTION>Significance of excess noise</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_params_solved" ucd="meta.number">
+<DESCRIPTION>Which parameters have been solved for?</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="astrometric_primary_flag" ucd="meta.code">
+<DESCRIPTION>Primary or seconday</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="nu_eff_used_in_astrometry" ucd="em.wavenumber" unit="um**-1">
+<DESCRIPTION>Effective wavenumber of the source used in the astrometric solution</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pseudocolour" ucd="em.wavenumber" unit="um**-1">
+<DESCRIPTION>Astrometrically estimated pseudocolour of the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pseudocolour_error" ucd="stat.error;em.wavenumber" unit="um**-1">
+<DESCRIPTION>Standard error of the pseudocolour of the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_pseudocolour_corr" ucd="stat.correlation;em.wavenumber;pos.eq.ra">
+<DESCRIPTION>Correlation between right ascension and pseudocolour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_pseudocolour_corr" ucd="stat.correlation;em.wavenumber;pos.eq.dec">
+<DESCRIPTION>Correlation between declination and pseudocolour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="parallax_pseudocolour_corr" ucd="stat.correlation;em.wavenumber;pos.parallax">
+<DESCRIPTION>Correlation between parallax and pseudocolour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pmra_pseudocolour_corr" ucd="stat.correlation;em.wavenumber;pos.pm;pos.eq.ra">
+<DESCRIPTION>Correlation between proper motion in right asension and pseudocolour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="pmdec_pseudocolour_corr" ucd="stat.correlation;em.wavenumber;pos.pm;pos.eq.dec">
+<DESCRIPTION>Correlation between proper motion in declination and pseudocolour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="astrometric_matched_transits" ucd="meta.number">
+<DESCRIPTION>Matched FOV transits used in the AGIS solution</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="visibility_periods_used" ucd="meta.number">
+<DESCRIPTION>Number of visibility periods used in Astrometric solution</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="astrometric_sigma5d_max" ucd="stat;pos.errorEllipse" unit="mas">
+<DESCRIPTION>The longest semi-major axis of the 5-d error ellipsoid</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="matched_transits" ucd="meta.number">
+<DESCRIPTION>The number of transits matched to this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="new_matched_transits" ucd="meta.number">
+<DESCRIPTION>The number of transits newly incorporated into an existing source in the current cycle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="matched_transits_removed" ucd="meta.number">
+<DESCRIPTION>The number of transits removed from an existing source in the current cycle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ipd_gof_harmonic_amplitude" ucd="stat.value">
+<DESCRIPTION>Amplitude of the IPD GoF versus position angle of scan</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ipd_gof_harmonic_phase" ucd="pos.posAng;stat.value" unit="deg">
+<DESCRIPTION>Phase of the IPD GoF versus position angle of scan</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="ipd_frac_multi_peak" ucd="stat.value">
+<DESCRIPTION>Percent of successful-IPD windows with more than one peak</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="ipd_frac_odd_win" ucd="stat.value">
+<DESCRIPTION>Percent of transits with truncated windows or multiple gate</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ruwe" ucd="stat.error">
+<DESCRIPTION>Renormalised unit weight error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_strength_k1" ucd="stat.value">
+<DESCRIPTION>Degree of concentration of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_strength_k2" ucd="stat.value">
+<DESCRIPTION>Degree of concentration of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_strength_k3" ucd="stat.value">
+<DESCRIPTION>Degree of concentration of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_strength_k4" ucd="stat.value">
+<DESCRIPTION>Degree of concentration of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_mean_k1" ucd="pos.posAng;stat.mean" unit="deg">
+<DESCRIPTION>Mean position angle of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_mean_k2" ucd="pos.posAng;stat.mean" unit="deg">
+<DESCRIPTION>Mean position angle of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_mean_k3" ucd="pos.posAng;stat.mean" unit="deg">
+<DESCRIPTION>Mean position angle of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="scan_direction_mean_k4" ucd="pos.posAng;stat.mean" unit="deg">
+<DESCRIPTION>Mean position angle of scan directions across the source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="duplicated_source" ucd="meta.code.status">
+<DESCRIPTION>Source with multiple source identifiers</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_g_n_obs" ucd="meta.number">
+<DESCRIPTION>Number of observations contributing to G photometry</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="phot_g_mean_flux" ucd="phot.flux;em.opt" unit="'electron'.s**-1">
+<DESCRIPTION>G-band mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_g_mean_flux_error" ucd="stat.error;phot.flux;em.opt" unit="'electron'.s**-1">
+<DESCRIPTION>Error on G-band mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_g_mean_flux_over_error" ucd="stat.snr;phot.flux;em.opt">
+<DESCRIPTION>G-band mean flux divided by its error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_g_mean_mag" ucd="phot.mag;em.opt" unit="mag">
+<DESCRIPTION>G-band mean magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_bp_n_obs" ucd="meta.number">
+<DESCRIPTION>Number of observations contributing to BP photometry</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="phot_bp_mean_flux" ucd="phot.flux;em.opt.B" unit="'electron'.s**-1">
+<DESCRIPTION>Integrated BP mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_bp_mean_flux_error" ucd="stat.error;phot.flux;em.opt.B" unit="'electron'.s**-1">
+<DESCRIPTION>Error on the integrated BP mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_bp_mean_flux_over_error" ucd="stat.snr;phot.flux;em.opt.B">
+<DESCRIPTION>Integrated BP mean flux divided by its error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_bp_mean_mag" ucd="phot.mag;em.opt.B" unit="mag">
+<DESCRIPTION>Integrated BP mean magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_rp_n_obs" ucd="meta.number">
+<DESCRIPTION>Number of observations contributing to RP photometry</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="phot_rp_mean_flux" ucd="phot.flux;em.opt.R" unit="'electron'.s**-1">
+<DESCRIPTION>Integrated RP mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_rp_mean_flux_error" ucd="stat.error;phot.flux;em.opt.R" unit="'electron'.s**-1">
+<DESCRIPTION>Error on the integrated RP mean flux</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_rp_mean_flux_over_error" ucd="stat.snr;phot.flux;em.opt.R">
+<DESCRIPTION>Integrated RP mean flux divided by its error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_rp_mean_mag" ucd="phot.mag;em.opt.R" unit="mag">
+<DESCRIPTION>Integrated RP mean magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="phot_bp_rp_excess_factor" ucd="arith.factor;phot.flux;em.opt">
+<DESCRIPTION>BP/RP excess factor</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_bp_n_contaminated_transits" ucd="meta.number">
+<DESCRIPTION>Number of BP contaminated transits</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_bp_n_blended_transits" ucd="meta.number">
+<DESCRIPTION>Number of BP blended transits</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_rp_n_contaminated_transits" ucd="meta.number">
+<DESCRIPTION>Number of RP contaminated transits</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_rp_n_blended_transits" ucd="meta.number">
+<DESCRIPTION>Number of RP blended transits</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="phot_proc_mode" ucd="meta.code">
+<DESCRIPTION>Photometry processing mode</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="bp_rp" ucd="phot.color;em.opt.B;em.opt.R" unit="mag">
+<DESCRIPTION>BP - RP colour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="bp_g" ucd="phot.color;em.opt.B;em.opt" unit="mag">
+<DESCRIPTION>BP - G colour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="g_rp" ucd="phot.color;em.opt;em.opt.R" unit="mag">
+<DESCRIPTION>G - RP colour</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="radial_velocity" ucd="spect.dopplerVeloc.opt;em.opt.I" unit="km.s**-1" utype="stc:AstroCoords.Velocity3D.Value3.C3">
+<DESCRIPTION>Radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="radial_velocity_error" ucd="stat.error;spect.dopplerVeloc.opt;em.opt.I" unit="km.s**-1" utype="stc:AstroCoords.Velocity3D.Error3.C3">
+<DESCRIPTION>Radial velocity error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rv_method_used" ucd="meta.code.class">
+<DESCRIPTION>Method used to obtain the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rv_nb_transits" ucd="meta.number">
+<DESCRIPTION>Number of transits used to compute the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rv_nb_deblended_transits" ucd="meta.number">
+<DESCRIPTION>Number of valid transits that have undergone deblending</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rv_visibility_periods_used" ucd="meta.number">
+<DESCRIPTION>Number of visibility periods used to estimate the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_expected_sig_to_noise" ucd="stat.snr">
+<DESCRIPTION>Expected signal to noise ratio in the combination of the spectra used to obtain the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_renormalised_gof" ucd="stat.fit.goodness">
+<DESCRIPTION>Radial velocity renormalised goodness of fit</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_chisq_pvalue" ucd="stat.fit.param">
+<DESCRIPTION>P-value for constancy based on a chi-squared criterion</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_time_duration" ucd="time.duration" unit="d">
+<DESCRIPTION>Time coverage of the radial velocity time series</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_amplitude_robust" ucd="stat.error;spect.dopplerVeloc.opt;em.opt.I" unit="km.s**-1">
+<DESCRIPTION>Total amplitude in the radial velocity time series after outlier removal</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_template_teff" ucd="stat.fit.param" unit="K">
+<DESCRIPTION>Teff of the template used to compute the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_template_logg" ucd="stat.fit.param" unit="log(cm.s**-2)">
+<DESCRIPTION>Logg of the template used to compute the radial velocity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rv_template_fe_h" ucd="stat.fit.param" unit="'dex'">
+<DESCRIPTION>[Fe/H] of the template used to compute the radial velocityy</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rv_atm_param_origin" ucd="meta.code.class">
+<DESCRIPTION>Origin of the atmospheric parameters associated to the template</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="vbroad" ucd="spect.dopplerVeloc.opt;em.opt.I" unit="km.s**-1" utype="stc:AstroCoords.Velocity3D.Value3.C3">
+<DESCRIPTION>Spectral line broadening parameter</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="vbroad_error" ucd="stat.error;spect.dopplerVeloc.opt;em.opt.I" unit="km.s**-1" utype="stc:AstroCoords.Velocity3D.Error3.C3">
+<DESCRIPTION>Uncertainty on the spectral line broadening</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="vbroad_nb_transits" ucd="meta.number">
+<DESCRIPTION>Number of transits used to compute vbroad</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="grvs_mag" ucd="phot.mag;em.opt" unit="mag" utype="stc:AstroCoords.Velocity3D.Value3.C3">
+<DESCRIPTION>Integrated Grvs magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="grvs_mag_error" ucd="stat.error;phot.mag;em.opt" unit="mag" utype="stc:AstroCoords.Velocity3D.Error3.C3">
+<DESCRIPTION>Grvs magnitude uncertainty</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="grvs_mag_nb_transits" ucd="meta.number">
+<DESCRIPTION>Number of transits used to compute Grvs</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rvs_spec_sig_to_noise" ucd="stat.snr">
+<DESCRIPTION>Signal to noise ratio in the mean RVS spectrum</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="char" name="phot_variable_flag" ucd="meta.code;src.var">
+<DESCRIPTION>Photometric variability flag</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="l" ucd="pos.galactic.lon" unit="deg" utype="stc:AstroCoords.Position2D.Value2.C1">
+<DESCRIPTION>Galactic longitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="b" ucd="pos.galactic.lat" unit="deg" utype="stc:AstroCoords.Position2D.Value2.C2">
+<DESCRIPTION>Galactic latitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ecl_lon" ucd="pos.ecliptic.lon" unit="deg" utype="stc:AstroCoords.Position2D.Value2.C1">
+<DESCRIPTION>Ecliptic longitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ecl_lat" ucd="pos.ecliptic.lat" unit="deg" utype="stc:AstroCoords.Position2D.Value2.C2">
+<DESCRIPTION>Ecliptic latitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="in_qso_candidates" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of additional information in the QSO candidates table</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="in_galaxy_candidates" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of additional information in the galaxy candidates table</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="non_single_star" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of additional information in the various Non-Single Star tables</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_xp_continuous" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of mean BP/RP spectrum in continuous representation for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_xp_sampled" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of mean BP/RP spectrum in sampled form for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_rvs" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of mean RVS spectrum for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_epoch_photometry" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of epoch photometry for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_epoch_rv" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of epoch radial velocity for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_mcmc_gspphot" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of GSP-Phot MCMC samples for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="has_mcmc_msc" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating the availability of MSC MCMC samples for this source</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="in_andromeda_survey" ucd="meta.code.status">
+<DESCRIPTION>Flag indicating that the source is present in the Gaia Andromeda Photometric Survey (GAPS)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="classprob_dsc_combmod_quasar" ucd="stat.probability">
+<DESCRIPTION>Probability from DSC-Combmod of being a quasar (data used: BP/RP spectrum, photometry, astrometry)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="classprob_dsc_combmod_galaxy" ucd="stat.probability">
+<DESCRIPTION>Probability from DSC-Combmod of being a galaxy (data used: BP/RP spectrum, photometry, astrometry)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="classprob_dsc_combmod_star" ucd="stat.probability">
+<DESCRIPTION>Probability from DSC-Combmod of being a single star (but not a white dwarf) (data used: BP/RP spectrum, photometry, astrometry)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="teff_gspphot" ucd="phys.temperature.effective" unit="K">
+<DESCRIPTION>Effective temperature from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="teff_gspphot_lower" ucd="phys.temperature.effective;stat.min" unit="K">
+<DESCRIPTION>Lower confidence level (16%) of effective temperature from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="teff_gspphot_upper" ucd="phys.temperature.effective;stat.max" unit="K">
+<DESCRIPTION>Upper confidence level (84%) of effective temperature from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logg_gspphot" ucd="phys.gravity" unit="log(cm.s**-2)">
+<DESCRIPTION>Surface gravity from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logg_gspphot_lower" ucd="phys.gravity;stat.min" unit="log(cm.s**-2)">
+<DESCRIPTION>Lower confidence level (16%) of surface gravity from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logg_gspphot_upper" ucd="phys.gravity;stat.max" unit="log(cm.s**-2)">
+<DESCRIPTION>Upper confidence level (84%) of surface gravity from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="mh_gspphot" ucd="phys.abund.Z" unit="'dex'">
+<DESCRIPTION>Iron abundance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="mh_gspphot_lower" ucd="phys.abund.Z;stat.min" unit="'dex'">
+<DESCRIPTION>Lower confidence level (16%) of iron abundance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="mh_gspphot_upper" ucd="phys.abund.Z;stat.max" unit="'dex'">
+<DESCRIPTION>Upper confidence level (84%) of iron abundance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="distance_gspphot" ucd="pos.distance;pos.eq" unit="pc">
+<DESCRIPTION>Distance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="distance_gspphot_lower" ucd="pos.distance;pos.eq" unit="pc">
+<DESCRIPTION>Lower confidence level (16%) of distance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="distance_gspphot_upper" ucd="pos.distance;pos.eq" unit="pc">
+<DESCRIPTION>Upper confidence level (84%) of distance from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="azero_gspphot" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="azero_gspphot_lower" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Lower confidence level (16%) of monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="azero_gspphot_upper" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Upper confidence level (84%) of monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ag_gspphot" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ag_gspphot_lower" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Lower confidence level (16%) of extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ag_gspphot_upper" ucd="phys.absorption;em.opt" unit="mag">
+<DESCRIPTION>Upper confidence level (84%) of extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ebpminrp_gspphot" ucd="phot.color.excess" unit="mag">
+<DESCRIPTION>Reddening $E(G_{\rm BP} - G_{\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ebpminrp_gspphot_lower" ucd="phot.color.excess;stat.min" unit="mag">
+<DESCRIPTION>Lower confidence level (16%) of reddening  $E(G_{\rm BP} - G_{\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ebpminrp_gspphot_upper" ucd="phot.color.excess;stat.max" unit="mag">
+<DESCRIPTION>Upper confidence level (84%) of reddening  $E(G_{\rm BP} - G_{\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="char" name="libname_gspphot" ucd="meta.note">
+<DESCRIPTION>Name of library that achieves the highest mean log-posterior in MCMC samples and was used to derive GSP-Phot parameters in this table</DESCRIPTION>
+</FIELD>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>1636148068921376768</TD>
+    <TD>Gaia DR3 1764891916939635456</TD>
+    <TD>1764891916939635456</TD>
+    <TD>580521245</TD>
+    <TD>2016.0</TD>
+    <TD>315.32597109804834</TD>
+    <TD>0.101634115</TD>
+    <TD>17.559805619697613</TD>
+    <TD>0.10277003</TD>
+    <TD>0.31374241190369795</TD>
+    <TD>0.12834091</TD>
+    <TD>2.4446018</TD>
+    <TD>6.426719</TD>
+    <TD>-1.9179193372864558</TD>
+    <TD>0.13144834</TD>
+    <TD>-6.133865505179104</TD>
+    <TD>0.116006054</TD>
+    <TD>0.07020232</TD>
+    <TD>0.11201481</TD>
+    <TD>-0.27123696</TD>
+    <TD>0.042167354</TD>
+    <TD>0.10874749</TD>
+    <TD>0.028422274</TD>
+    <TD>-0.5273607</TD>
+    <TD>-0.17259048</TD>
+    <TD>0.009571971</TD>
+    <TD>0.081965774</TD>
+    <TD>340</TD>
+    <TD>0</TD>
+    <TD>338</TD>
+    <TD>2</TD>
+    <TD>0.68734545</TD>
+    <TD>365.15363</TD>
+    <TD>0.21434899</TD>
+    <TD>0.44668385</TD>
+    <TD>31</TD>
+    <TD>F</TD>
+    <TD>1.5274357</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>39</TD>
+    <TD>19</TD>
+    <TD>0.18730934</TD>
+    <TD>42</TD>
+    <TD>24</TD>
+    <TD>0</TD>
+    <TD>0.009915139</TD>
+    <TD>4.676522</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1.0257423</TD>
+    <TD>0.15157843</TD>
+    <TD>0.17105474</TD>
+    <TD>0.12205427</TD>
+    <TD>0.3548798</TD>
+    <TD>-59.043346</TD>
+    <TD>-27.623547</TD>
+    <TD>35.44406</TD>
+    <TD>21.89233</TD>
+    <TD>F</TD>
+    <TD>360</TD>
+    <TD>976.8022027056514</TD>
+    <TD>1.241918</TD>
+    <TD>786.52716</TD>
+    <TD>18.21285</TD>
+    <TD>39</TD>
+    <TD>491.08509263916346</TD>
+    <TD>11.995398</TD>
+    <TD>40.93946</TD>
+    <TD>18.610651</TD>
+    <TD>37</TD>
+    <TD>675.2322831061975</TD>
+    <TD>8.965309</TD>
+    <TD>75.31612</TD>
+    <TD>17.674263</TD>
+    <TD>1.1940159</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>0.936388</TD>
+    <TD>0.39780045</TD>
+    <TD>0.53858757</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>NOT_AVAILABLE</TD>
+    <TD>64.8929805137486</TD>
+    <TD>-18.537083755553525</TD>
+    <TD>323.86716354159336</TD>
+    <TD>32.918098444771374</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>0</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>T</TD>
+    <TD>T</TD>
+    <TD>F</TD>
+    <TD>1.02298134E-13</TD>
+    <TD>5.111727E-13</TD>
+    <TD>0.9999734</TD>
+    <TD>5191.9795</TD>
+    <TD>5177.509</TD>
+    <TD>5208.066</TD>
+    <TD>4.7591</TD>
+    <TD>4.7406</TD>
+    <TD>4.7757</TD>
+    <TD>-1.546</TD>
+    <TD>-1.6716</TD>
+    <TD>-1.4133</TD>
+    <TD>2166.6355</TD>
+    <TD>2129.5337</TD>
+    <TD>2206.504</TD>
+    <TD>0.0034</TD>
+    <TD>7.0E-4</TD>
+    <TD>0.0107</TD>
+    <TD>0.0028</TD>
+    <TD>6.0E-4</TD>
+    <TD>0.0087</TD>
+    <TD>0.0015</TD>
+    <TD>3.0E-4</TD>
+    <TD>0.0048</TD>
+    <TD>MARCS</TD>
+  </TR>
+  <TR>
+    <TD>1636148068921376768</TD>
+    <TD>Gaia DR3 1764891947002973952</TD>
+    <TD>1764891947002973952</TD>
+    <TD>524912345</TD>
+    <TD>2016.0</TD>
+    <TD>315.34750960539213</TD>
+    <TD>0.11758836</TD>
+    <TD>17.548927573734137</TD>
+    <TD>0.113975056</TD>
+    <TD>1.012920330692662</TD>
+    <TD>0.14311141</TD>
+    <TD>7.0778446</TD>
+    <TD>9.313527</TD>
+    <TD>-1.8095073913035873</TD>
+    <TD>0.14438008</TD>
+    <TD>-9.136053005631984</TD>
+    <TD>0.13603632</TD>
+    <TD>0.11496353</TD>
+    <TD>0.12881516</TD>
+    <TD>-0.3044364</TD>
+    <TD>0.031738836</TD>
+    <TD>0.1302855</TD>
+    <TD>0.023668256</TD>
+    <TD>-0.49655384</TD>
+    <TD>-0.06088824</TD>
+    <TD>-0.0014984624</TD>
+    <TD>0.11706371</TD>
+    <TD>340</TD>
+    <TD>0</TD>
+    <TD>338</TD>
+    <TD>2</TD>
+    <TD>1.0667996</TD>
+    <TD>377.042</TD>
+    <TD>0.14667615</TD>
+    <TD>0.16490445</TD>
+    <TD>31</TD>
+    <TD>F</TD>
+    <TD>1.3051419</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>39</TD>
+    <TD>20</TD>
+    <TD>0.21124263</TD>
+    <TD>42</TD>
+    <TD>25</TD>
+    <TD>0</TD>
+    <TD>0.0075967684</TD>
+    <TD>17.168072</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1.0406066</TD>
+    <TD>0.22464405</TD>
+    <TD>0.19459477</TD>
+    <TD>0.049372166</TD>
+    <TD>0.3649695</TD>
+    <TD>-49.71299</TD>
+    <TD>-24.157787</TD>
+    <TD>28.777056</TD>
+    <TD>20.07291</TD>
+    <TD>F</TD>
+    <TD>354</TD>
+    <TD>874.383736011129</TD>
+    <TD>1.1692679</TD>
+    <TD>747.80444</TD>
+    <TD>18.33311</TD>
+    <TD>39</TD>
+    <TD>213.86568030937084</TD>
+    <TD>9.868676</TD>
+    <TD>21.671162</TD>
+    <TD>19.51319</TD>
+    <TD>36</TD>
+    <TD>974.6099374349693</TD>
+    <TD>9.248273</TD>
+    <TD>105.38291</TD>
+    <TD>17.275818</TD>
+    <TD>1.3592151</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>2.2373714</TD>
+    <TD>1.1800785</TD>
+    <TD>1.0572929</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>NOT_AVAILABLE</TD>
+    <TD>64.89711988797136</TD>
+    <TD>-18.559988721618186</TD>
+    <TD>323.885826854893</TD>
+    <TD>32.90093630273652</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>0</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>T</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>1.0596194E-13</TD>
+    <TD>1.7080193E-10</TD>
+    <TD>0.99992317</TD>
+    <TD>3563.0015</TD>
+    <TD>3531.8423</TD>
+    <TD>3595.7578</TD>
+    <TD>4.5522</TD>
+    <TD>4.3831</TD>
+    <TD>4.6283</TD>
+    <TD>-0.7745</TD>
+    <TD>-0.8869</TD>
+    <TD>-0.6861</TD>
+    <TD>617.4601</TD>
+    <TD>520.8617</TD>
+    <TD>859.8898</TD>
+    <TD>0.5018</TD>
+    <TD>0.4354</TD>
+    <TD>0.5612</TD>
+    <TD>0.3401</TD>
+    <TD>0.2949</TD>
+    <TD>0.3809</TD>
+    <TD>0.2012</TD>
+    <TD>0.1748</TD>
+    <TD>0.2252</TD>
+    <TD>MARCS</TD>
+  </TR>
+  <TR>
+    <TD>1636148068921376768</TD>
+    <TD>Gaia DR3 1764891947002986752</TD>
+    <TD>1764891947002986752</TD>
+    <TD>451639184</TD>
+    <TD>2016.0</TD>
+    <TD>315.3541047002093</TD>
+    <TD>0.08167741</TD>
+    <TD>17.551819768144675</TD>
+    <TD>0.07931686</TD>
+    <TD>0.4309003486878412</TD>
+    <TD>0.1005949</TD>
+    <TD>4.2835207</TD>
+    <TD>5.590769</TD>
+    <TD>-3.4102779610929526</TD>
+    <TD>0.10217771</TD>
+    <TD>-4.43020331430865</TD>
+    <TD>0.09069526</TD>
+    <TD>0.03369889</TD>
+    <TD>0.086245716</TD>
+    <TD>-0.3081972</TD>
+    <TD>0.05393087</TD>
+    <TD>0.16284299</TD>
+    <TD>0.030198408</TD>
+    <TD>-0.55892557</TD>
+    <TD>-0.14133427</TD>
+    <TD>-0.04933119</TD>
+    <TD>0.0668026</TD>
+    <TD>355</TD>
+    <TD>0</TD>
+    <TD>354</TD>
+    <TD>1</TD>
+    <TD>0.20130166</TD>
+    <TD>369.3158</TD>
+    <TD>0.0</TD>
+    <TD>0.0</TD>
+    <TD>31</TD>
+    <TD>F</TD>
+    <TD>1.4502244</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>41</TD>
+    <TD>20</TD>
+    <TD>0.14578581</TD>
+    <TD>44</TD>
+    <TD>26</TD>
+    <TD>0</TD>
+    <TD>0.01130516</TD>
+    <TD>172.61827</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1.0066717</TD>
+    <TD>0.15200329</TD>
+    <TD>0.18703672</TD>
+    <TD>0.10037108</TD>
+    <TD>0.31949717</TD>
+    <TD>-48.146416</TD>
+    <TD>-18.293316</TD>
+    <TD>25.550423</TD>
+    <TD>20.892618</TD>
+    <TD>F</TD>
+    <TD>375</TD>
+    <TD>1388.2320613654513</TD>
+    <TD>1.4189215</TD>
+    <TD>978.37134</TD>
+    <TD>17.831211</TD>
+    <TD>37</TD>
+    <TD>562.5523020729147</TD>
+    <TD>7.4158177</TD>
+    <TD>75.85843</TD>
+    <TD>18.463135</TD>
+    <TD>39</TD>
+    <TD>1121.793265069252</TD>
+    <TD>10.463208</TD>
+    <TD>107.21313</TD>
+    <TD>17.123114</TD>
+    <TD>1.2133026</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>1.3400211</TD>
+    <TD>0.6319237</TD>
+    <TD>0.70809746</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>NOT_AVAILABLE</TD>
+    <TD>64.90358658493338</TD>
+    <TD>-18.56320187559463</TD>
+    <TD>323.89403899853477</TD>
+    <TD>32.90153987768509</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>0</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>T</TD>
+    <TD>T</TD>
+    <TD>F</TD>
+    <TD>5.530223E-11</TD>
+    <TD>5.100293E-13</TD>
+    <TD>0.99999404</TD>
+    <TD>4610.508</TD>
+    <TD>4584.6245</TD>
+    <TD>4628.1626</TD>
+    <TD>4.6525</TD>
+    <TD>4.6307</TD>
+    <TD>4.6707</TD>
+    <TD>-0.051</TD>
+    <TD>-0.1282</TD>
+    <TD>0.0392</TD>
+    <TD>1573.2444</TD>
+    <TD>1519.6143</TD>
+    <TD>1631.4188</TD>
+    <TD>0.0072</TD>
+    <TD>0.0014</TD>
+    <TD>0.0229</TD>
+    <TD>0.0055</TD>
+    <TD>0.001</TD>
+    <TD>0.0176</TD>
+    <TD>0.0029</TD>
+    <TD>5.0E-4</TD>
+    <TD>0.0093</TD>
+    <TD>PHOENIX</TD>
+  </TR>
+  <TR>
+    <TD>1636148068921376768</TD>
+    <TD>Gaia DR3 1764891947002993664</TD>
+    <TD>1764891947002993664</TD>
+    <TD>748176666</TD>
+    <TD>2016.0</TD>
+    <TD>315.3544399554049</TD>
+    <TD>1.637863</TD>
+    <TD>17.553779605182978</TD>
+    <TD>1.5407432</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>0.14249174</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>88</TD>
+    <TD>0</TD>
+    <TD>88</TD>
+    <TD>0</TD>
+    <TD>1.7855973</TD>
+    <TD>107.403244</TD>
+    <TD>0.0</TD>
+    <TD>0.0</TD>
+    <TD>3</TD>
+    <TD>F</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>11</TD>
+    <TD>8</TD>
+    <TD>4.4615197</TD>
+    <TD>11</TD>
+    <TD>4</TD>
+    <TD>1</TD>
+    <TD>0.07230324</TD>
+    <TD>18.064058</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD></TD>
+    <TD>0.35093528</TD>
+    <TD>0.16742617</TD>
+    <TD>0.22911617</TD>
+    <TD>0.43283355</TD>
+    <TD>-43.108173</TD>
+    <TD>-5.9528794</TD>
+    <TD>-22.256912</TD>
+    <TD>24.315754</TD>
+    <TD>F</TD>
+    <TD>86</TD>
+    <TD>80.7092846054102</TD>
+    <TD>1.3348957</TD>
+    <TD>60.461117</TD>
+    <TD>20.920057</TD>
+    <TD>4</TD>
+    <TD>28.499094591476872</TD>
+    <TD>8.793018</TD>
+    <TD>3.2411048</TD>
+    <TD>21.701464</TD>
+    <TD>5</TD>
+    <TD>75.22941564641181</TD>
+    <TD>12.741523</TD>
+    <TD>5.904272</TD>
+    <TD>20.056927</TD>
+    <TD>1.2852116</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1</TD>
+    <TD>1.644537</TD>
+    <TD>0.7814064</TD>
+    <TD>0.86313057</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>NOT_AVAILABLE</TD>
+    <TD>64.90542956995792</TD>
+    <TD>-18.56225807550367</TD>
+    <TD>323.8951842452103</TD>
+    <TD>32.90327727928833</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>0</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>2.173665E-4</TD>
+    <TD>1.1023724E-5</TD>
+    <TD>0.9990401</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+  <TR>
+    <TD>1636148068921376768</TD>
+    <TD>Gaia DR3 1764891947003015808</TD>
+    <TD>1764891947003015808</TD>
+    <TD>1172298150</TD>
+    <TD>2016.0</TD>
+    <TD>315.35231164459225</TD>
+    <TD>0.105628766</TD>
+    <TD>17.55789902541285</TD>
+    <TD>0.10343442</TD>
+    <TD>2.3230657607195995</TD>
+    <TD>0.1304522</TD>
+    <TD>17.807793</TD>
+    <TD>28.29965</TD>
+    <TD>26.276747919361988</TD>
+    <TD>0.13053545</TD>
+    <TD>10.507267541814935</TD>
+    <TD>0.119461775</TD>
+    <TD>0.05531052</TD>
+    <TD>0.11571937</TD>
+    <TD>-0.36621892</TD>
+    <TD>0.0535698</TD>
+    <TD>0.1539512</TD>
+    <TD>0.041945655</TD>
+    <TD>-0.5373333</TD>
+    <TD>-0.10888243</TD>
+    <TD>-0.04546111</TD>
+    <TD>0.079472475</TD>
+    <TD>384</TD>
+    <TD>0</TD>
+    <TD>383</TD>
+    <TD>1</TD>
+    <TD>0.68576074</TD>
+    <TD>416.88174</TD>
+    <TD>0.19747424</TD>
+    <TD>0.35186553</TD>
+    <TD>31</TD>
+    <TD>F</TD>
+    <TD>1.2689235</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>44</TD>
+    <TD>20</TD>
+    <TD>0.18847686</TD>
+    <TD>47</TD>
+    <TD>28</TD>
+    <TD>0</TD>
+    <TD>0.011604584</TD>
+    <TD>7.0009007</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>1.0241553</TD>
+    <TD>0.20351861</TD>
+    <TD>0.17561956</TD>
+    <TD>0.107715674</TD>
+    <TD>0.35974142</TD>
+    <TD>-55.01387</TD>
+    <TD>-26.84313</TD>
+    <TD>35.525555</TD>
+    <TD>21.315857</TD>
+    <TD>F</TD>
+    <TD>404</TD>
+    <TD>960.4295576898529</TD>
+    <TD>1.3536069</TD>
+    <TD>709.53357</TD>
+    <TD>18.231203</TD>
+    <TD>44</TD>
+    <TD>157.08815370811772</TD>
+    <TD>7.240655</TD>
+    <TD>21.695295</TD>
+    <TD>19.848183</TD>
+    <TD>43</TD>
+    <TD>1151.6508822986236</TD>
+    <TD>10.676194</TD>
+    <TD>107.87092</TD>
+    <TD>17.094593</TD>
+    <TD>1.36266</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>2.7535896</TD>
+    <TD>1.6169796</TD>
+    <TD>1.13661</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD>NOT_AVAILABLE</TD>
+    <TD>64.90756320530029</TD>
+    <TD>-18.558135451496867</TD>
+    <TD>323.89456266620164</TD>
+    <TD>32.90783961039706</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>0</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>F</TD>
+    <TD>T</TD>
+    <TD>T</TD>
+    <TD>F</TD>
+    <TD>1.1358039E-13</TD>
+    <TD>1.054849E-12</TD>
+    <TD>0.9996796</TD>
+    <TD>3359.9282</TD>
+    <TD>3337.229</TD>
+    <TD>3370.229</TD>
+    <TD>4.6276</TD>
+    <TD>4.5878</TD>
+    <TD>4.6766</TD>
+    <TD>-0.6417</TD>
+    <TD>-0.7435</TD>
+    <TD>-0.5734</TD>
+    <TD>352.5525</TD>
+    <TD>340.5149</TD>
+    <TD>365.9758</TD>
+    <TD>0.7595</TD>
+    <TD>0.7129</TD>
+    <TD>0.795</TD>
+    <TD>0.491</TD>
+    <TD>0.4606</TD>
+    <TD>0.5141</TD>
+    <TD>0.3124</TD>
+    <TD>0.2936</TD>
+    <TD>0.3266</TD>
+    <TD>MARCS</TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+</RESOURCE>
+<RESOURCE type="meta" utype="adhoc:service" name="ancillary">
+    <DESCRIPTION>Retrieve DataLink file containing ancillary data for source</DESCRIPTION>
+    <PARAM name="standardID" datatype="char" arraysize="*" value="ivo://ivoa.net/std/DataLink#links-1.0"/>
+    <PARAM name="accessURL" datatype="char" arraysize="*" value="https://gea.esac.esa.int/data-server/datalink/links"/>
+    <PARAM name="contentType" datatype="char" arraysize="*" value="application/x-votable+xml;content=datalink"/>
+    <GROUP name="inputParams">
+        <PARAM name="ID"  datatype="char" arraysize="*" value="" ref="DESIGNATION"/>
+    </GROUP>
+</RESOURCE>
+</VOTABLE>

@@ -122,6 +122,21 @@ end
     @test tbl[1].Tb === (5.1641636927207e11)u"K"
 end
 
+@testitem "read 6" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votfile = joinpath(@__DIR__, "data/gaia")
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 5
+    @test tbl[1].dec_error == 0.10277003f0
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 5
+    @test tbl[1].dec_error == 0.10277003f0u"mas"
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles

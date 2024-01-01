@@ -251,6 +251,12 @@ _parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
 _parse(::Type{T}, s) where {T} = parse(T, s)
 _parse(::Type{Char}, s) = only(s)
 _parse(::Type{String}, s) = s
+function _parse(::Type{Bool}, s)
+    first(s) in ('T', 't', '1') && return true
+    first(s) in ('F', 'f', '0') && return false
+    parse(Bool, s)
+end
+
 function _parse(::Type{T}, s) where {T <: Complex}
     re, im, rest... = split(s)
     @assert isempty(rest)

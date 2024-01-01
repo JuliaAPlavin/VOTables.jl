@@ -22,7 +22,13 @@ function unit_viz_to_jl(col, viz::AbstractString)
                 r"\bum\b" => "μm",
                 r"\b(/beam|electron)\b" => (s -> (@warn "ignoring the unsupported '$s' unit" viz; "")),)
             replace(__,
+                "'" => "",  # XXX: shouldn't have arcminutes described this way?
+            )
+            replace(__,
                 r"^/" => "1/",
+                r"/$" => "",
+                r"^\." => "",
+                r"\.$" => "",
                 r"([^*])\*\*([^*])" => s"\1^\2",  # XXX: should be tested
             )
             # handle eg "mas.yr-1":
