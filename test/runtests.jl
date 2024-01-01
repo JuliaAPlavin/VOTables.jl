@@ -53,6 +53,17 @@ end
     @test tbl[3].logg === 25386.342f0u"cm/s^2"
 end
 
+@testitem "read error" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/xmatch_error.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    VOTables.read(votfile)
+end
+
 @testitem "_" begin
     import Aqua
     Aqua.test_all(VOTables; ambiguities=false, unbound_args=false)

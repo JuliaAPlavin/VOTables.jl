@@ -69,13 +69,23 @@ function _filltable!(res, tblx)
     return res
 end
 
-tblxml(votfile) = @p let
-    Base.read(votfile, String)
-    parsexml
-    root
-    @aside ns = ["ns" => namespace(__)]
-    findall("ns:RESOURCE/ns:TABLE", __, ns)
-    only
+function tblxml(votfile)
+    xml = @p Base.read(votfile, String) |> parsexml
+    tables = @p let 
+        xml
+        root
+        @aside ns = ["ns" => namespace(__)]
+        findall("ns:RESOURCE/ns:TABLE", __, ns)
+    end
+    length(tables) == 1 && return only(tables)
+    length(tables) > 1 && error("VOTable files with multiple tables not supported yet")
+    @assert isempty(tables)
+    infos = @p xml |> root |> findall("ns:RESOURCE/ns:INFO", __, ["ns" => namespace(__)])
+    if length(infos) != 1
+        error("VOTable file has no tables")
+    else
+        error("VOTable file has no tables, original error: $(nodecontent(only(infos)))")
+    end
 end
 
 description(tblxml) = @p let
