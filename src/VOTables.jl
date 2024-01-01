@@ -4,7 +4,8 @@ using EzXML
 using DictArrays
 using Dictionaries
 using DataPipes
-using Accessors
+using AccessorsExtra
+using AstroAngles
 using Dates
 
 
@@ -20,7 +21,7 @@ function read(votfile; postprocess=true, unitful=false)
         @modify(col -> map(identity, col), __ |> Properties())  # narrow types, removing Missing unless actually present
         postprocess ? @modify(AbstractDictionary(__)) do dct
             _fieldattrs_dct = @p _fieldattrs |> map(Symbol(_[:name]) => _) |> dictionary
-            map(pairs(dct)) do (k, col)  # XXX: need to make typestable
+            map(pairs(dct)) do (k, col)  # XXX: need to make typestable?
                 postprocess_col(col, _fieldattrs_dct[k]; unitful)
             end
         end : __
@@ -58,7 +59,7 @@ function _filltable!(res, tblx)
         only
         findall("ns:TR", __, ns)
         foreach() do tr
-            map(AbstractDictionary(res), eachelement(tr)) do col, td  # XXX: need to make typestable
+            map(AbstractDictionary(res), eachelement(tr)) do col, td  # XXX: need to make typestable?
                 @assert nodename(td) == "TD"
                 val = _parse(eltype(col), nodecontent(td))
                 push!(col, val)
@@ -91,8 +92,8 @@ fieldattrs(tblxml) = @p let
     findall("ns:FIELD", __, ns)
     map() do fieldxml
         attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
-        desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> only |> nodecontent
-        insert!(attrs, :description, desc)
+        desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> maybe(only)(__) |> maybe(nodecontent)(__)
+        isnothing(desc) || insert!(attrs, :description, desc)
         return attrs
     end
 end
@@ -125,10 +126,8 @@ function vo2jltype(attrs)
 end
 
 
-_parse(::Type{Union{Missing, T}}, s) where {T} = _parse(T, s)
+_parse(::Type{Union{Missing, T}}, s) where {T} = isempty(s) ? missing : _parse(T, s)
 _parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
-_parse(::Type{Union{Missing, Char}}, s) = isempty(s) ? missing : only(s)
-_parse(::Type{Union{Missing, Char}}, ::Missing) = missing  # disambiguation
 
 _parse(::Type{T}, s) where {T} = parse(T, s)
 _parse(::Type{Char}, s) = only(s)
