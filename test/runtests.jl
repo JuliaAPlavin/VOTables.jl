@@ -61,7 +61,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    VOTables.read(votfile)
+    @test_throws "not in the service" VOTables.read(votfile)
 end
 
 @testitem "_" begin
