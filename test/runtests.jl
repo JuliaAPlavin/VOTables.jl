@@ -2,7 +2,7 @@ using TestItems
 using TestItemRunner
 @run_package_tests
 
-@testitem "read" begin
+@testitem "read 1" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles
 
@@ -12,7 +12,7 @@ using TestItemRunner
 
     tbl = VOTables.read(votfile)
     @test length(tbl) == 100
-    @test tbl.recno == 1:100
+    @test tbl.recno::Vector{Int32} == 1:100
     @test eltype(tbl.Tb) == Float32
     @test eltype(tbl.l_Tb) == Union{Missing,Char}
     @test tbl[5].Bpa === -9.1f0
@@ -20,10 +20,32 @@ using TestItemRunner
     @test tbl[5].Tb === 11.682f0
 
     tbl = VOTables.read(votfile; unitful=true)
-    @test tbl.recno == 1:100
+    @test tbl.recno::Vector{Int32} == 1:100
+    @test eltype(tbl.Tb) <: Quantity{Float32}
     @test eltype(tbl.l_Tb) == Union{Missing,Char}
     @test tbl[5].Epoch == Date(2008, 5, 1)
-    @test tbl[5].Tb ≈ (10^11.682f0)u"K"
+    @test tbl[5].Tb === (10^11.682f0)u"K"
+end
+
+@testitem "read 2" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/xmatch_gaia.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 18
+    @test tbl._key::Vector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
+    @test tbl[1].var"BP-RP" === 1.127016f0
+    @test tbl[3].logg === 4.4046f0
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 18
+    @test tbl._key::Vector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
+    @test tbl[1].var"BP-RP" === 1.127016f0u"mag"
+    @test tbl[3].logg === 25386.342f0u"cm/s^2"
 end
 
 @testitem "_" begin
