@@ -147,6 +147,10 @@ end
 
     @test_throws "not in the service" VOTables.read(votfile)
     @test_throws "Incorrect ADQL query" VOTables.read(joinpath(@__DIR__, "data/tap_error"))
+    
+    @test_throws "Maximum execution time" VOTables.read(joinpath(@__DIR__, "data/tap_results_and_error"))
+    tbl = @test_warn "Maximum execution time" VOTables.read(joinpath(@__DIR__, "data/tap_results_and_error"); strict=false)
+    @test length(tbl) == 5
 end
 
 @testitem "write" begin

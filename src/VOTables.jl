@@ -31,13 +31,17 @@ Read a VOTable from a file or another `IO` object. By default, the result is a `
 """
 function read end
 
+struct VOTableException <: Exception
+    message::String
+end
+
 # support Cols()?
 # support <COOSYS> tag
 
 read(votfile; kwargs...) = read(DictArray, votfile; kwargs...)
 
-function read(result_type, votfile; postprocess=true, unitful=false)
-    tblx = tblxml(votfile)
+function read(result_type, votfile; postprocess=true, unitful=false, strict=true)
+    tblx = tblxml(votfile; strict)
     _fieldattrs = fieldattrs(tblx)
     @p let
         _fieldattrs
@@ -163,7 +167,7 @@ function _filltable!(res, tblx)
     return res
 end
 
-function tblxml(votfile)
+function tblxml(votfile; strict::Bool)
     # xml = @p Base.read(votfile, String) |> parsexml
     xml = @p StringView(mmap(votfile)) |> parsexml
     tables = @p let 
@@ -172,15 +176,23 @@ function tblxml(votfile)
         @aside ns = ["ns" => namespace(__)]
         findall("ns:RESOURCE/ns:TABLE", __, ns)
     end
-    length(tables) == 1 && return only(tables)
-    length(tables) > 1 && error("VOTable files with multiple tables not supported yet")
-    @assert isempty(tables)
     infos = @p xml |> root |> findall("ns:RESOURCE/ns:INFO", __, ["ns" => namespace(__)])
-    if isempty(infos)
-        error("VOTable file has no tables")
-    else
-        error("VOTable file has no tables, original error: $(nodecontent(first(infos)))")
+    errorinfos = @p infos |> filter(uppercase(_["name"]) == "QUERY_STATUS" && uppercase(_["value"]) == "ERROR")
+    if isempty(tables)
+        if isempty(errorinfos)
+            error("VOTable file has no tables")
+        else
+            error("VOTable file has no tables, see original errors ($(length(errorinfos))) below.\n$(join(nodecontent.(errorinfos), "\n\n"))")
+        end
     end
+    if !isempty(errorinfos)
+        strict ?
+            throw(VOTableException("VOTable file contains data, but errors have occurred. Pass `strict=false` to turn this exception into a warning.\n$(join(nodecontent.(errorinfos), "\n\n"))")) :
+            @error "VOTable file contains data, but errors have occurred. Pass `strict=true` to turn this warning into an exception." errors=nodecontent.(errorinfos)
+    end
+    length(tables) == 1 ?
+        only(tables) :
+        error("VOTable files with multiple tables not supported yet")
 end
 
 description(tblxml) = @p let

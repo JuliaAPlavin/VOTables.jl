@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results">
+<INFO name="QUERY_STATUS" value="OK" />
+
+<INFO name="QUERY" value="SELECT
+	my.my_key,
+	gaia.source_id,
+	gaia.ra,
+	gaia.dec,
+	gaia.ra_error,
+	gaia.dec_error,
+	gaia.ra_dec_corr,
+	DISTANCE(
+	    POINT(my.ra, my.dec),
+	    POINT(gaia.ra, gaia.dec)
+	) * 3600 * 1000 AS sep_mas
+FROM TAP_UPLOAD.my
+JOIN gaiadr3.gaia_source AS gaia
+ON 1 = CONTAINS(
+    POINT(my.ra, my.dec),
+    CIRCLE(gaia.ra, gaia.dec, 300 / 3600.)
+)"><![CDATA[SELECT
+	my.my_key,
+	gaia.source_id,
+	gaia.ra,
+	gaia.dec,
+	gaia.ra_error,
+	gaia.dec_error,
+	gaia.ra_dec_corr,
+	DISTANCE(
+	    POINT(my.ra, my.dec),
+	    POINT(gaia.ra, gaia.dec)
+	) * 3600 * 1000 AS sep_mas
+FROM TAP_UPLOAD.my
+JOIN gaiadr3.gaia_source AS gaia
+ON 1 = CONTAINS(
+    POINT(my.ra, my.dec),
+    CIRCLE(gaia.ra, gaia.dec, 300 / 3600.)
+)]]></INFO>
+<INFO name="CAPTION" value="How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html"><![CDATA[How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html]]></INFO>
+<INFO name="CITATION" value="How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html" ucd="meta.bib"><![CDATA[How to cite and acknowledge Gaia: https://gea.esac.esa.int/archive/documentation/credits.html]]></INFO>
+<INFO name="PAGE" value="" />
+<INFO name="PAGE_SIZE" value="" />
+<INFO name="JOBID" value="1691316207749O"><![CDATA[1691316207749O]]></INFO>
+<INFO name="JOBNAME" value="" />
+<COOSYS ID="GAIADR3" epoch="J2016.0" system="ICRS" />
+
+<RESOURCE>
+  <COOSYS ID="t102368-coosys-1" epoch="J2016.0" system="ICRS"/>
+</RESOURCE>
+<TABLE>
+<FIELD datatype="long" name="my_key"/>
+<FIELD datatype="long" name="source_id" ucd="meta.id">
+<DESCRIPTION>Unique source identifier (unique within a particular Data Release)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ra" ref="t102368-coosys-1" ucd="pos.eq.ra;meta.main" unit="deg" utype="stc:AstroCoords.Position3D.Value3.C1">
+<DESCRIPTION>Right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="dec" ref="t102368-coosys-1" ucd="pos.eq.dec;meta.main" unit="deg" utype="stc:AstroCoords.Position3D.Value3.C2">
+<DESCRIPTION>Declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_error" ucd="stat.error;pos.eq.ra" unit="mas" utype="stc:AstroCoords.Position3D.Error3.C1">
+<DESCRIPTION>Standard error of right ascension</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dec_error" ucd="stat.error;pos.eq.dec" unit="mas" utype="stc:AstroCoords.Position3D.Error3.C2">
+<DESCRIPTION>Standard error of declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ra_dec_corr" ucd="stat.correlation">
+<DESCRIPTION>Correlation between right ascension and declination</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="sep_mas"/>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>1</TD>
+    <TD>2449925177581149440</TD>
+    <TD>0.0019853345051221364</TD>
+    <TD>-0.45110095877012507</TD>
+    <TD>3.9916556</TD>
+    <TD>2.713248</TD>
+    <TD>0.36689606</TD>
+    <TD>294474.32590077457</TD>
+  </TR>
+  <TR>
+    <TD>1</TD>
+    <TD>2449926620690162048</TD>
+    <TD>0.03712156898760714</TD>
+    <TD>-0.44627604741577515</TD>
+    <TD>0.43255582</TD>
+    <TD>0.29708183</TD>
+    <TD>0.33434042</TD>
+    <TD>297177.37080622284</TD>
+  </TR>
+  <TR>
+    <TD>1</TD>
+    <TD>2449926693705865216</TD>
+    <TD>0.015928681641395107</TD>
+    <TD>-0.4421085289431128</TD>
+    <TD>0.11557449</TD>
+    <TD>0.08056756</TD>
+    <TD>0.22804405</TD>
+    <TD>263570.7458271489</TD>
+  </TR>
+  <TR>
+    <TD>1</TD>
+    <TD>2449927239165462528</TD>
+    <TD>0.060393536704726865</TD>
+    <TD>-0.4026706926301017</TD>
+    <TD>0.25995344</TD>
+    <TD>0.19872944</TD>
+    <TD>0.35748142</TD>
+    <TD>226635.811447815</TD>
+  </TR>
+  <TR>
+    <TD>1</TD>
+    <TD>2449927239165661824</TD>
+    <TD>0.06672227055817886</TD>
+    <TD>-0.3931570904216046</TD>
+    <TD>1.0982424</TD>
+    <TD>0.7574102</TD>
+    <TD>0.22701141</TD>
+    <TD>231595.2138316909</TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+<INFO name="QUERY_STATUS" value="ERROR"><![CDATA[Maximum execution time (60 s) reached. Job aborted.]]></INFO>
+
+</RESOURCE>
+</VOTABLE>
