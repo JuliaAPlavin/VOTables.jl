@@ -1,4 +1,4 @@
-module VOTables
+@doc Base.read(joinpath(dirname(@__DIR__), "README.md"), String) module VOTables
 
 using EzXML
 using DictArrays
@@ -9,6 +9,13 @@ using AstroAngles
 using Dates
 
 
+"""    VOTables.read(votfile; [postprocess=true], [unitful=false])
+
+Read a VOTable from a file or another `IO` object. The result is a `DictArray`: a Julian collection and table.
+
+- `postprocess=true`: do further processing of values, other than parsing formal VOTable datatypes. Includes parsing dates and times, and converting units to `Unitful.jl`; set to `false` to disable all of this.
+- `unitful=false`: parse units from VOTable metadata to `Unitful.jl` units. Uses units from all loaded `Unitful`-compatible packages, ignores unknown units and shows warnings for them. Requires `postprocess=true`.
+"""
 function read(votfile; postprocess=true, unitful=false)
     tblx = tblxml(votfile)
     _fieldattrs = fieldattrs(tblx)
