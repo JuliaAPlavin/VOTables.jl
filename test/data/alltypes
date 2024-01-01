@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.ivoa.net/xml/VOTable/v1.3"
+  xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+
+<RESOURCE ID="alltypes" name="alltypes">
+  <TABLE ID="alltypes" name="alltypes">
+    <DESCRIPTION>VOTable file with all eltypes present, for precompilation</DESCRIPTION>
+
+    <FIELD name="a01" ucd="b" datatype="boolean"></FIELD>
+    <FIELD name="a02" ucd="b" datatype="bit"></FIELD>
+    <FIELD name="a03" ucd="b" datatype="unsignedByte"></FIELD>
+    <FIELD name="a04" ucd="b" datatype="char"></FIELD>
+    <FIELD name="a05" ucd="b" datatype="unicodeChar"></FIELD>
+    <FIELD name="a06" ucd="b" datatype="short"></FIELD>
+    <FIELD name="a07" ucd="b" datatype="int"></FIELD>
+    <FIELD name="a08" ucd="b" datatype="long"></FIELD>
+    <FIELD name="a09" ucd="b" datatype="float" unit="m"></FIELD>
+    <FIELD name="a10" ucd="b" datatype="double">
+        <DESCRIPTION>Some description</DESCRIPTION>
+    </FIELD>
+    <FIELD name="a11" ucd="b" datatype="floatComplex" unit="m">
+        <DESCRIPTION>Some description</DESCRIPTION>
+    </FIELD>
+    <FIELD name="a12" ucd="b" datatype="doubleComplex"></FIELD>
+
+    <!-- <FIELD name="b01" ucd="b" datatype="boolean" arraysize="123"></FIELD>
+    <FIELD name="b02" ucd="b" datatype="bit" arraysize="123"></FIELD>
+    <FIELD name="b03" ucd="b" datatype="unsignedByte" arraysize="123"></FIELD> -->
+    <FIELD name="b04" ucd="b" datatype="char" arraysize="123"></FIELD>
+    <FIELD name="b05" ucd="b" datatype="unicodeChar" arraysize="123"></FIELD>
+    <!-- <FIELD name="b06" ucd="b" datatype="short" arraysize="123"></FIELD>
+    <FIELD name="b07" ucd="b" datatype="int" arraysize="123"></FIELD>
+    <FIELD name="b08" ucd="b" datatype="long" arraysize="123"></FIELD>
+    <FIELD name="b09" ucd="b" datatype="float" arraysize="123"></FIELD>
+    <FIELD name="b10" ucd="b" datatype="double" arraysize="123"></FIELD>
+    <FIELD name="b11" ucd="b" datatype="floatComplex" arraysize="123"></FIELD>
+    <FIELD name="b12" ucd="b" datatype="doubleComplex" arraysize="123"></FIELD> -->
+
+    <FIELD name="c01" ucd="b" datatype="boolean"></FIELD>
+    <FIELD name="c02" ucd="b" datatype="bit"></FIELD>
+    <FIELD name="c03" ucd="b" datatype="unsignedByte"></FIELD>
+    <FIELD name="c04" ucd="b" datatype="char"></FIELD>
+    <FIELD name="c05" ucd="b" datatype="unicodeChar"></FIELD>
+    <FIELD name="c06" ucd="b" datatype="short"></FIELD>
+    <FIELD name="c07" ucd="b" datatype="int"></FIELD>
+    <FIELD name="c08" ucd="b" datatype="long"></FIELD>
+    <FIELD name="c09" ucd="b" datatype="float"></FIELD>
+    <FIELD name="c10" ucd="b" datatype="double"></FIELD>
+    <FIELD name="c11" ucd="b" datatype="floatComplex"></FIELD>
+    <FIELD name="c12" ucd="b" datatype="doubleComplex"></FIELD>
+
+    <FIELD name="d04" ucd="b" datatype="char" arraysize="123"></FIELD>
+    <FIELD name="d05" ucd="b" datatype="unicodeChar" arraysize="123"></FIELD>
+
+<DATA><TABLEDATA>
+<TR>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>A</TD>
+    <TD>A</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+
+    <!-- <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD> -->
+    <TD>AAA</TD>
+    <TD>AAA</TD>
+    <!-- <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD> -->
+
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>A</TD>
+    <TD>A</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+
+    <TD>AAA</TD>
+    <TD>AAA</TD>
+</TR>
+<TR>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>A</TD>
+    <TD>A</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+
+    <!-- <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD> -->
+    <TD>AAA</TD>
+    <TD>AAA</TD>
+    <!-- <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD> -->
+
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+
+    <TD></TD>
+    <TD></TD>
+</TR>
+</TABLEDATA></DATA>
+</TABLE>
+<INFO name="matches" value="9220">matching records</INFO>
+</RESOURCE>
+</VOTABLE>

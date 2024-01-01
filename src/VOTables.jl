@@ -32,6 +32,7 @@ Read a VOTable from a file or another `IO` object. By default, the result is a `
 function read end
 
 # support Cols()?
+# support <COOSYS> tag
 
 read(votfile; kwargs...) = read(DictArray, votfile; kwargs...)
 
@@ -44,6 +45,12 @@ function read(result_type, votfile; postprocess=true, unitful=false)
         _container_from_components(result_type, __)
         _filltable!(__, tblx)
         @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __ |> Properties())  # narrow types, removing Missing unless actually present
+        postprocess ? @modify(Tables.columns(__)) do cols
+            @assert cols isa Union{NamedTuple,AbstractDictionary}
+            modify(cols, ∗, _fieldattrs) do col, attrs
+                postprocess_col(col, attrs; unitful)
+            end
+        end : __
         @modify(Tables.columns(__)) do cols
             modify(cols, ∗, _fieldattrs) do col, attrs
                 MetadataArray(
@@ -56,12 +63,6 @@ function read(result_type, votfile; postprocess=true, unitful=false)
                 )
             end
         end
-        postprocess ? @modify(Tables.columns(__)) do cols
-            @assert cols isa Union{NamedTuple,AbstractDictionary}
-            modify(cols, ∗, _fieldattrs) do col, attrs
-                postprocess_col(col, attrs; unitful)
-            end
-        end : __
     end
 end
 
@@ -188,16 +189,17 @@ TYPE_VO_TO_JL = Dict(
 
 function vo2jltype(attrs)
     arraysize = get(attrs, :arraysize, nothing)
+    basetype = TYPE_VO_TO_JL[attrs[:datatype]]
     if isnothing(arraysize) || arraysize == "1"
-        TYPE_VO_TO_JL[attrs[:datatype]]
+        basetype
     elseif occursin("x", arraysize)
         error("Multimensional arrays not supported yet")
-    elseif attrs[:datatype] == "char"
+    elseif basetype === Char
         @assert occursin(r"^[\d*]+$", arraysize)
         String
     else
         @assert occursin(r"^[\d*]+$", arraysize)
-        Vector{TYPE_VO_TO_JL[attrs[:datatype]]}
+        Vector{basetype}
     end
 end
 
@@ -216,5 +218,11 @@ _filter(f, xs::NamedTuple)= xs[filter(k -> f(xs[k]), keys(xs))]
 import DataAPI: metadata, metadatasupport
 metadatasupport(::Type{<:MetadataArray}) = (read=true, write=false)
 metadata(ma::MetadataArray) = MetadataArrays.metadata(ma)
+
+
+using PrecompileTools
+@compile_workload begin
+    read(joinpath(@__DIR__, "../test/data/alltypes"))
+end
 
 end
