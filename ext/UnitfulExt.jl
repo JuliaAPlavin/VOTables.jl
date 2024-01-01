@@ -2,7 +2,7 @@ module UnitfulExt
 
 using Unitful
 using VOTables.DataPipes
-import VOTables: unit_viz_to_jl
+import VOTables: unit_viz_to_jl, jl2votype, _unparse
 
 function unit_viz_to_jl(col, viz::AbstractString)
     m = match(r"^(log\(|\[)([^([]+)(\)|\])$", viz)
@@ -38,6 +38,8 @@ function unit_viz_to_jl(col, viz::AbstractString)
     return postf.(col) .* u
 end
 
+jl2votype(::Type{QT}) where {T, QT <: Quantity{T}} = error("Writing unitful values not supported yet")
+_unparse(x::Quantity) = _unparse(ustrip(x))
 
 # XXX: piracy, need to upstream
 Base.:*(::Missing, ::Unitful.MixedUnits) = missing
