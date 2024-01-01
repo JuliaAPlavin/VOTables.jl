@@ -13,20 +13,26 @@ using TestItemRunner
 
     tbl = VOTables.read(votfile)
     @test length(tbl) == 100
-    @test tbl.recno::Vector{Int32} == 1:100
+    @test tbl.recno::AbstractVector{Int32} == 1:100
     @test eltype(tbl.Tb) == Float32
     @test eltype(tbl.l_Tb) == Union{Missing,Char}
     @test tbl[5].Bpa === -9.1f0
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === 11.682f0
     @test tbl.ID[1:20:100] == ["0003+380", "0003-066", "0006+061", "0007+106", "0011+189"]
+    
+    # @test metadata(tbl) == (description=...,)
+    @test metadata(tbl.Epoch) == (description = "Epoch", ucd = "time.epoch", unit_vot = "'Y:M:D'")
+    @test colmetadata(tbl, :Epoch) == metadata(tbl.Epoch)
+    @test colmetadata(tbl, :ID) == (description = "Source name in truncated B1950.0 coordinates", ucd = "meta.id;meta.main")
+    @test colmetadata(tbl)[:Epoch] == colmetadata(tbl, :Epoch)
 
     @test isequal(Tables.columns(VOTables.read(DictArray, votfile)), Tables.columns(tbl))
     @test isequal(Tables.columns(VOTables.read(StructArray, votfile)), Tables.columns(StructArray(tbl)))
 
     using Unitful
     tbl = VOTables.read(votfile; unitful=true)
-    @test tbl.recno::Vector{Int32} == 1:100
+    @test tbl.recno::AbstractVector{Int32} == 1:100
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === (10^11.682f0)u"K"
     # @test tbl[5].Bmaj == 0.82f0  # only passes with ]test, fails in VSCode test runner
@@ -48,13 +54,13 @@ end
 
     tbl = VOTables.read(votfile)
     @test length(tbl) == 18
-    @test tbl._key::Vector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
+    @test tbl._key::AbstractVector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
     @test tbl[1].var"BP-RP" === 1.127016f0
     @test tbl[3].logg === 4.4046f0
 
     tbl = VOTables.read(votfile; unitful=true)
     @test length(tbl) == 18
-    @test tbl._key::Vector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
+    @test tbl._key::AbstractVector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
     @test tbl[1].var"BP-RP" === 1.127016f0u"mag"
     @test tbl[3].logg === 25386.342f0u"cm/s^2"
 end
@@ -110,7 +116,7 @@ end
 
 @testitem "_" begin
     import Aqua
-    Aqua.test_all(VOTables; ambiguities=false, unbound_args=false)
+    Aqua.test_all(VOTables; ambiguities=false, unbound_args=false, piracy=false)
     Aqua.test_ambiguities(VOTables)
 
     import CompatHelperLocal as CHL

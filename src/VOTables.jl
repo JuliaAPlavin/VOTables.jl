@@ -8,10 +8,14 @@ using DictArrays
 using DictArrays.StructArrays
 using DictArrays.Tables
 using Dictionaries
+using MetadataArrays
+using DataAPI: metadata, colmetadata
 using DataPipes
 using AccessorsExtra
 using AstroAngles
 using Dates
+
+export metadata, colmetadata
 
 include("stringviews.jl")
 include("xml.jl")
@@ -40,6 +44,18 @@ function read(result_type, votfile; postprocess=true, unitful=false)
         _container_from_components(result_type, __)
         _filltable!(__, tblx)
         @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __ |> Properties())  # narrow types, removing Missing unless actually present
+        @modify(Tables.columns(__)) do cols
+            modify(cols, ∗, _fieldattrs) do col, attrs
+                MetadataArray(
+                    col,
+                    _filter(!isnothing, (
+                        description=get(attrs, :description, nothing),
+                        ucd=get(attrs, :ucd, nothing),
+                        unit_vot=get(attrs, :unit, nothing)
+                    )),
+                )
+            end
+        end
         postprocess ? @modify(Tables.columns(__)) do cols
             @assert cols isa Union{NamedTuple,AbstractDictionary}
             modify(cols, ∗, _fieldattrs) do col, attrs
@@ -192,5 +208,13 @@ _parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
 _parse(::Type{T}, s) where {T} = parse(T, s)
 _parse(::Type{Char}, s) = only(s)
 _parse(::Type{String}, s) = s
+
+# https://github.com/JuliaLang/julia/pull/50795
+_filter(f, xs::NamedTuple)= xs[filter(k -> f(xs[k]), keys(xs))]
+
+# XXX: should upstream to MetadataArrays
+import DataAPI: metadata, metadatasupport
+metadatasupport(::Type{<:MetadataArray}) = (read=true, write=false)
+metadata(ma::MetadataArray) = MetadataArrays.metadata(ma)
 
 end
