@@ -5,11 +5,11 @@ Support for the VOTable format (Virtual Observatory Table, [defined](https://www
 Supports:
 - ✅ Read VOTable files when the data is in the XML format (so-called `TABLEDATA` serialization)
 - ✅ Parse numbers, strings, datetimes (optional), units (optional, uses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl))
+- ✅ Extract column descriptions from VOTable files into Julia table metadata
 
 Does not support (yet):
 - Binary tables (`FITS`, `BINARY`, `BINARY2` serializations)
 - Multiple tables in a single file
-- Extract table and column description from VOTable files into Julia table metadata
 - Write VOTable files
 
 See also: https://github.com/JuliaAstro/VOTables.jl, an older package with similar goals. That one was never registered in General, and the current `VOTables.jl` package is more performant and featureful.\
