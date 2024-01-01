@@ -1,39 +1,56 @@
 @doc Base.read(joinpath(dirname(@__DIR__), "README.md"), String) module VOTables
 
 using EzXML
+using StringViews
+using UnsafeArrays: UnsafeArray
+using Mmap
 using DictArrays
+using DictArrays.StructArrays
+using DictArrays.Tables
 using Dictionaries
 using DataPipes
 using AccessorsExtra
 using AstroAngles
 using Dates
 
+include("stringviews.jl")
+include("xml.jl")
+include("misc.jl")
 
-"""    VOTables.read(votfile; [postprocess=true], [unitful=false])
 
-Read a VOTable from a file or another `IO` object. The result is a `DictArray`: a Julian collection and table.
+"""    VOTables.read([result_type=DictArray], votfile; [postprocess=true], [unitful=false])
+
+Read a VOTable from a file or another `IO` object. By default, the result is a `DictArray`: a Julian collection and table. Alternatively, specify `result_type=StructArray`.
 
 - `postprocess=true`: do further processing of values, other than parsing formal VOTable datatypes. Includes parsing dates and times, and converting units to `Unitful.jl`; set to `false` to disable all of this.
 - `unitful=false`: parse units from VOTable metadata to `Unitful.jl` units. Uses units from all loaded `Unitful`-compatible packages, ignores unknown units and shows warnings for them. Requires `postprocess=true`.
 """
-function read(votfile; postprocess=true, unitful=false)
+function read end
+
+# support Cols()?
+
+read(votfile; kwargs...) = read(DictArray, votfile; kwargs...)
+
+function read(result_type, votfile; postprocess=true, unitful=false)
     tblx = tblxml(votfile)
     _fieldattrs = fieldattrs(tblx)
     @p let
         _fieldattrs
         map(Symbol(_[:name]) => Union{vo2jltype(_),Missing}[])
-        Dictionary(first.(__), last.(__))
-        DictArray
+        _container_from_components(result_type, __)
         _filltable!(__, tblx)
-        @modify(col -> map(identity, col), __ |> Properties())  # narrow types, removing Missing unless actually present
-        postprocess ? @modify(AbstractDictionary(__)) do dct
-            _fieldattrs_dct = @p _fieldattrs |> map(Symbol(_[:name]) => _) |> dictionary
-            map(pairs(dct)) do (k, col)  # XXX: need to make typestable?
-                postprocess_col(col, _fieldattrs_dct[k]; unitful)
+        @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __ |> Properties())  # narrow types, removing Missing unless actually present
+        postprocess ? @modify(Tables.columns(__)) do cols
+            @assert cols isa Union{NamedTuple,AbstractDictionary}
+            modify(cols, ∗, _fieldattrs) do col, attrs
+                postprocess_col(col, attrs; unitful)
             end
         end : __
     end
 end
+
+_container_from_components(::Type{DictArray}, pairs) = @p pairs |> Dictionary(first.(__), last.(__)) |> DictArray
+_container_from_components(::Type{StructArray}, pairs) = @p pairs |> NamedTuple{Tuple(first.(__))}(Tuple(last.(__))) |> StructArray
 
 function postprocess_col(col, attrs; unitful::Bool)
     ucds = split(get(attrs, :ucd, ""), ";")
@@ -74,25 +91,33 @@ end
 unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 
 function _filltable!(res, tblx)
-    @p let
+    trs = @p let
         tblx
         @aside ns = ["ns" => namespace(__)]
         findall("ns:DATA/ns:TABLEDATA", __, ns)
         only
         findall("ns:TR", __, ns)
-        foreach() do tr
-            map(AbstractDictionary(res), eachelement(tr)) do col, td  # XXX: need to make typestable?
-                @assert nodename(td) == "TD"
-                val = _parse(eltype(col), nodecontent(td))
-                push!(col, val)
-            end
+    end
+    for col in Tables.columns(res)
+        sizehint!(col, length(trs))
+    end
+    foreach(trs) do tr
+        for (col, td) in zip(Tables.columns(res), eachelementptr(tr))
+            @assert nodename_sv(td) == "TD"
+            @multiifs(
+                (Bool, UInt8, Char, String, Int16, Int32, Int64, Float32, Float64, ComplexF32, ComplexF64),
+                col isa AbstractVector{Union{Missing, _}},
+                nodecontent_sv(content -> push!(col, _parse(eltype(col), content)), td),
+                error("Shouldn't happen. Got eltype(col) == $(eltype(col))")
+            )
         end
     end
     return res
 end
 
 function tblxml(votfile)
-    xml = @p Base.read(votfile, String) |> parsexml
+    # xml = @p Base.read(votfile, String) |> parsexml
+    xml = @p StringView(mmap(votfile)) |> parsexml
     tables = @p let 
         xml
         root
@@ -152,7 +177,6 @@ function vo2jltype(attrs)
     elseif occursin("x", arraysize)
         error("Multimensional arrays not supported yet")
     elseif attrs[:datatype] == "char"
-        # XXX: should test that "123*" is accepted
         @assert occursin(r"^[\d*]+$", arraysize)
         String
     else

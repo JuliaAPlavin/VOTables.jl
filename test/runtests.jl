@@ -4,6 +4,8 @@ using TestItemRunner
 
 @testitem "read 1" begin
     using Dates
+    using DictArrays, StructArrays
+    using StructArrays.Tables
 
     votgzfile = joinpath(@__DIR__, "data/votable?-source=J%2FApJ%2F923%2F67%2Ftable2&-out=**&-out.max=100.gz")
     votfile = tempname()
@@ -17,6 +19,10 @@ using TestItemRunner
     @test tbl[5].Bpa === -9.1f0
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === 11.682f0
+    @test tbl.ID[1:20:100] == ["0003+380", "0003-066", "0006+061", "0007+106", "0011+189"]
+
+    @test isequal(Tables.columns(VOTables.read(DictArray, votfile)), Tables.columns(tbl))
+    @test isequal(Tables.columns(VOTables.read(StructArray, votfile)), Tables.columns(StructArray(tbl)))
 
     using Unitful
     tbl = VOTables.read(votfile; unitful=true)
