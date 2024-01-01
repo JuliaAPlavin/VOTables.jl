@@ -134,13 +134,17 @@ TYPE_VO_TO_JL = Dict(
 )
 
 function vo2jltype(attrs)
-    if get(attrs, :arraysize, "1") == "1"
+    arraysize = get(attrs, :arraysize, nothing)
+    if isnothing(arraysize) || arraysize == "1"
         TYPE_VO_TO_JL[attrs[:datatype]]
+    elseif occursin("x", arraysize)
+        error("Multimensional arrays not supported yet")
     elseif attrs[:datatype] == "char"
-        @assert occursin(r"^(\d+|\*)$", attrs[:arraysize])
+        # XXX: should test that "123*" is accepted
+        @assert occursin(r"^[\d*]+$", arraysize)
         String
     else
-        @assert occursin(r"^(\d+|\*)$", attrs[:arraysize])
+        @assert occursin(r"^[\d*]+$", arraysize)
         Vector{TYPE_VO_TO_JL[attrs[:datatype]]}
     end
 end
