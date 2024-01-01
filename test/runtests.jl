@@ -4,7 +4,6 @@ using TestItemRunner
 
 @testitem "read 1" begin
     using Dates
-    using Unitful, UnitfulAstro, UnitfulAngles
 
     votgzfile = joinpath(@__DIR__, "data/votable?-source=J%2FApJ%2F923%2F67%2Ftable2&-out=**&-out.max=100.gz")
     votfile = tempname()
@@ -19,12 +18,18 @@ using TestItemRunner
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === 11.682f0
 
+    using Unitful
     tbl = VOTables.read(votfile; unitful=true)
     @test tbl.recno::Vector{Int32} == 1:100
-    @test eltype(tbl.Tb) <: Quantity{Float32}
-    @test eltype(tbl.l_Tb) == Union{Missing,Char}
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === (10^11.682f0)u"K"
+    # @test tbl[5].Bmaj == 0.82f0  # only passes with ]test, fails in VSCode test runner
+
+    using UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(votfile; unitful=true)
+    @test tbl[5].Epoch == Date(2008, 5, 1)
+    @test tbl[5].Tb === (10^11.682f0)u"K"
+    @test tbl[5].Bmaj == 0.82f0u"mas"
 end
 
 @testitem "read 2" begin

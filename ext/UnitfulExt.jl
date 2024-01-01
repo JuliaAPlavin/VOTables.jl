@@ -27,7 +27,7 @@ function unit_viz_to_jl(col, viz::AbstractString)
             replace(__,
                 r"(\w)\." => s"\1*",
                 r"(\w)(-?\d)" => s"\1^\2")
-            uparse(unit_context=Unitful.unitmodules, __)
+            uparse(unit_context=[Unitful; Unitful.unitmodules], __)
         end
     catch exception
         @warn "cannot parse unit '$viz', ignoring it" exception
