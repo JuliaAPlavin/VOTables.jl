@@ -7,7 +7,7 @@ import VOTables: unit_viz_to_jl
 function unit_viz_to_jl(col, viz::AbstractString)
     m = match(r"^(log\(|\[)([^([]+)(\)|\])$", viz)
     viz, postf = if !isnothing(m)
-        @warn "assuming the decimal logarithm" viz
+        @info "assuming the decimal logarithm" viz
         (m[2], exp10)
     else
         (viz, identity)
