@@ -72,6 +72,25 @@ end
     @test tbl[1].JD == DateTime(1998, 9, 28, 7, 20, 55, 680)
 end
 
+@testitem "read 4" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/jetdirs.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 88
+    @test tbl[1].Freq === "8"
+    @test tbl[1].PA === Int16(-105)
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 88
+    @test tbl[1].Freq === "8"
+    @test tbl[1].PA === Int16(-105)u"°"
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles

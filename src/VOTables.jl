@@ -60,7 +60,12 @@ function postprocess_col(col, attrs; unitful::Bool)
     elseif "pos.eq.dec" in ucds && unit == "\"d:m:s\""
         dms2rad.(col)
     elseif unitful && !isnothing(unit)
-        unit_viz_to_jl(col, unit)
+        if eltype(col) <: Union{Number,Missing,Nothing}
+            unit_viz_to_jl(col, unit)
+        else
+            @warn "column with a non-numeric eltype has a unit specified; ignoring the unit" unit eltype(col) attrs
+            col
+        end
     else
         col
     end
