@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VOTABLE version="1.3" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results">
+<INFO name="QUERY_STATUS" value="ERROR">Incorrect ADQL query: 3 unresolved identifiers: id [l.1 c.82 - l.1 c.99]!
+  - table ids is not found
+  - Unknown column "TAP_UPLOAD.ids.id" !
+  - 2 unresolved identifiers: id [l.1 c.82 - l.1 c.99]!
+  - table ids is not found
+  - Unknown column "TAP_UPLOAD.ids.id" !</INFO>
+<INFO name="PROVIDER" value="CDS">TAPVizieR</INFO>
+<INFO  name="REQ_ID" value="S1691177969061"/>
+<INFO  name="ERROR_TYPE" value="fatal"/>
+<INFO  name="USER" value="95.24.61.25 (95.24.61.25)"/>
+<INFO  name="ACTION" value="sync"/>
+</RESOURCE>
+</VOTABLE>

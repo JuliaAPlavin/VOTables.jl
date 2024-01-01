@@ -145,10 +145,10 @@ function tblxml(votfile)
     length(tables) > 1 && error("VOTable files with multiple tables not supported yet")
     @assert isempty(tables)
     infos = @p xml |> root |> findall("ns:RESOURCE/ns:INFO", __, ["ns" => namespace(__)])
-    if length(infos) != 1
+    if isempty(infos)
         error("VOTable file has no tables")
     else
-        error("VOTable file has no tables, original error: $(nodecontent(only(infos)))")
+        error("VOTable file has no tables, original error: $(nodecontent(first(infos)))")
     end
 end
 

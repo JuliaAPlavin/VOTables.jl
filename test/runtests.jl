@@ -112,6 +112,7 @@ end
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
     @test_throws "not in the service" VOTables.read(votfile)
+    @test_throws "Incorrect ADQL query" VOTables.read(joinpath(@__DIR__, "data/tap_error"))
 end
 
 @testitem "_" begin
