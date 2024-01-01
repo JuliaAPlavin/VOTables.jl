@@ -37,6 +37,10 @@ function postprocess_col(col, attrs; unitful::Bool)
             @warn "unknown time unit" unit
             col
         end
+    elseif "pos.eq.ra" in ucds && unit == "\"h:m:s\""
+        hms2rad.(col)
+    elseif "pos.eq.dec" in ucds && unit == "\"d:m:s\""
+        dms2rad.(col)
     elseif unitful && !isnothing(unit)
         unit_viz_to_jl(col, unit)
     else
