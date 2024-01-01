@@ -177,7 +177,7 @@ end
 
 @testitem "_" begin
     import Aqua
-    Aqua.test_all(VOTables; ambiguities=false, unbound_args=false, piracy=false)
+    Aqua.test_all(VOTables; ambiguities=false, unbound_args=false, piracies=false)
     Aqua.test_ambiguities(VOTables)
 
     import CompatHelperLocal as CHL
