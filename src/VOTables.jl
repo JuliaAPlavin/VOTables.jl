@@ -104,20 +104,20 @@ function postprocess_col(col, attrs; unitful::Bool)
     ucds = split(get(attrs, :ucd, ""), ";")
     unit = get(attrs, :unit, nothing)
     if "time.epoch" in ucds
-        if unit == "'Y:M:D'"
+        if eltype(col) <: AbstractString && unit == "'Y:M:D'"
             map(x -> parse(Date, x, dateformat"Y-m-d"), col)
-        elseif unit == "d"
+        elseif eltype(col) <: Real && unit == "d"
             @warn "assuming julian days" column=attrs[:name]
             map(julian2datetime, col)
         elseif isnothing(unit)
             try
                 map(x -> parse(Date, x, dateformat"Y-m-d"), col)
             catch exc
-                @warn "unknown time unit" unit exc
+                @warn "unknown time unit" unit eltype(col) exc
                 col
             end
         else
-            @warn "unknown time unit" unit
+            @warn "unknown time unit" unit eltype(col)
             col
         end
     elseif "pos.eq.ra" in ucds && unit == "\"h:m:s\""

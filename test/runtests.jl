@@ -103,6 +103,25 @@ end
     @test tbl[1].PA === Int16(-105)u"°"
 end
 
+@testitem "read 5" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    # time is of "double" type, but Y:M:D format is given
+    votfile = joinpath(@__DIR__, "data/weird_mix")
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 1
+    @test tbl.recno::AbstractVector{Int32} == [10]
+    @test tbl[1].Epoch == 2.456516e6
+    @test tbl.ID[1] == "0003+380"
+    @test tbl[1].Tb === 11.713
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 1
+    @test tbl[1].Tb === (5.1641636927207e11)u"K"
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles

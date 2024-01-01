@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VOTABLE version="1.3" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results">
+<INFO name="QUERY_STATUS" value="OK"/>
+<INFO name="PROVIDER" value="CDS">TAPVizieR</INFO>
+<INFO name="QUERY" value='select * from "J/ApJ/923/67/table2" inner join ids on "J/ApJ/923/67/table2".ID = TAP_UPLOAD.ids.id'/>
+<TABLE name="result_S1691184455148">
+<FIELD datatype="int" name="recno" ucd="meta.record">
+<DESCRIPTION>Record number assigned by the VizieR team. Should Not be used for identification.</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="char" name="ID" ucd="meta.id;meta.main">
+<DESCRIPTION>Source name in truncated B1950.0 coordinates</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Epoch" ucd="time.epoch" unit="'Y:M:D'">
+<DESCRIPTION>Epoch</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="nu-obs" ucd="em.freq" unit="GHz">
+<DESCRIPTION>[14.24/15.5] Central Observing Frequency</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Bmaj" ucd="phys.angSize" unit="mas">
+<DESCRIPTION>[0.36/3] Naturally weighed beam, major axis</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Bmin" ucd="phys.angSize;src" unit="mas">
+<DESCRIPTION>[0.3/2] Naturally weighed beam, minor axis</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Bpa" ucd="pos.posAng;instr.beam" unit="deg">
+<DESCRIPTION>[-90/90] Naturally weighed beam, position angle E of N</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="CX" ucd="phys.angSize" unit="mas">
+<DESCRIPTION>[-3/30.4] Center location of removed clean component area</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="CY" ucd="phys.angSize" unit="mas">
+<DESCRIPTION>[-1.1/27.1] Center location of removed clean component area</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Cfact">
+<DESCRIPTION>[1/2.81] Factor times beam dimensions used for removing clean components</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SG" ucd="phot.flux.density;em.radio.12-30GHz" unit="Jy">
+<DESCRIPTION>[0.0028/28.43] Flux density of fitted Gaussian</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="1" datatype="char" name="l_Omega-maj" ucd="meta.code.error">
+<DESCRIPTION>Limit flag on Omega-maj</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Omega-maj" ucd="phys.angSize;meta.modelled" unit="mas">
+<DESCRIPTION>[0.024/1.52] Fitted Gaussian, major axis</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="1" datatype="char" name="l_Omega-min" ucd="meta.code.error">
+<DESCRIPTION>Limit flag on Omega-min</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Omega-min" ucd="phys.angSize;meta.modelled" unit="mas">
+<DESCRIPTION>[0.008/0.9] Fitted Gaussian, minor axis</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Omega-pa" ucd="pos.posAng;meta.modelled" unit="deg">
+<DESCRIPTION>[-90/90] Fitted Gaussian, position angle, E of N</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="sigma-rms" unit="mJy/beam">
+<DESCRIPTION>[0.039/159] RMS residual noise (1)</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="1" datatype="char" name="l_Tb" ucd="meta.code.error">
+<DESCRIPTION>Limit flag on Tb</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Tb" ucd="phys.temperature;stat.max" unit="log(K)">
+<DESCRIPTION>[9/13.8] log of peak brightness temperature (2)</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="1" datatype="char" name="f_Tb" ucd="meta.code">
+<DESCRIPTION>Flag on Tb (G1)</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="char" name="id"/>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>10</TD>
+    <TD>0003+380</TD>
+    <TD>2456516</TD>
+    <TD>15.36</TD>
+    <TD>0.84</TD>
+    <TD>0.53</TD>
+    <TD>-4.1</TD>
+    <TD>0.0</TD>
+    <TD>0.0</TD>
+    <TD>1.0</TD>
+    <TD>0.581</TD>
+    <TD> </TD>
+    <TD>0.159</TD>
+    <TD> </TD>
+    <TD>0.045</TD>
+    <TD>-61.6</TD>
+    <TD>846</TD>
+    <TD> </TD>
+    <TD>11.713</TD>
+    <TD> </TD>
+    <TD>0003+380</TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>
