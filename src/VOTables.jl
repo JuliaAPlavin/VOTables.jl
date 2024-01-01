@@ -54,7 +54,7 @@ function _filltable!(res, tblx)
         only
         findall("ns:TR", __, ns)
         foreach() do tr
-            map(AbstractDictionary(res), eachelement(tr)) do col, td
+            map(AbstractDictionary(res), eachelement(tr)) do col, td  # XXX: need to make typestable
                 @assert nodename(td) == "TD"
                 val = _parse(eltype(col), nodecontent(td))
                 push!(col, val)
