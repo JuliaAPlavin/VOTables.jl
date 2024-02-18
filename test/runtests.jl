@@ -154,6 +154,29 @@ end
     @test tbl[1].DataFluxValue == 1.07e-15u"Jy"
 end
 
+@testitem "read 8" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/vectorcol.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 5
+    @test tbl[1].energy_bounds_samples == [2e-7, 1.1e-6]
+    @test tbl[1].obsID == "00000000-0000-0000-b65e-840e6d24aa6d"
+    @test tbl[1].obsID_ == "00000000-0000-0000-b65e-840e6d24aa6d"
+    @test tbl[1].lastModified == "2021-11-05T18:38:44.060"
+    @test tbl[1].lastModified_ == "2021-11-05T18:38:44.060"
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 5
+    @test tbl[5].energy_bounds_samples == [4.994e-7, 5.05e-7]
+    @test tbl[5].energy_bounds_lower == 4.994e-7u"m"
+    @test tbl[5].obsID == "00000000-0000-0000-a22d-31527058196f"
+    @test tbl[5].obsID_ == "00000000-0000-0000-a22d-31527058196f"
+end
 @testitem "read binary" begin
     votgzfile = joinpath(@__DIR__, "data/binary.gz")
     votfile = tempname()
