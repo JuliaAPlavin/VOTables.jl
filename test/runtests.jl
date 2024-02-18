@@ -138,7 +138,10 @@ end
 end
 
 @testitem "read binary" begin
-    votfile = joinpath(@__DIR__, "data/binary")
+    votgzfile = joinpath(@__DIR__, "data/binary.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
     tbl = VOTables.read(votfile)
     @test length(tbl) == 49
     @test tbl[12] == (db_table_name = "", description = "", schema_name = "hsc_v2", size = 90751872, size_bytes = 52785233920, table_index = -1, table_name = "hsc_v2.hubble_sc2", table_type = "table", utype = "")
