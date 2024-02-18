@@ -45,30 +45,26 @@ read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 function read(result_type, votfile; postprocess=true, unitful=false, strict=true)
     tblx = tblxml(votfile; strict)
     _fieldattrs = fieldattrs(tblx)
+    colnames = @p _fieldattrs map(Symbol(_[:name]))
+    colarrays = @p _fieldattrs map(Union{vo2jltype(_),Missing}[])
     @p let
-        _fieldattrs
-        map(Symbol(_[:name]) => Union{vo2jltype(_),Missing}[])
-        _container_from_components(result_type, __)
+        colarrays
         _filltable!(__, tblx)
-        @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __ |> Properties())  # narrow types, removing Missing unless actually present
-        postprocess ? @modify(Tables.columns(__)) do cols
-            @assert cols isa Union{NamedTuple,AbstractDictionary}
-            modify(cols, ∗, _fieldattrs) do col, attrs
-                postprocess_col(col, attrs; unitful)
-            end
+        @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
+        postprocess ? modify(__, ∗, _fieldattrs) do col, attrs
+            postprocess_col(col, attrs; unitful)
         end : __
-        @modify(Tables.columns(__)) do cols
-            modify(cols, ∗, _fieldattrs) do col, attrs
-                MetadataArray(
-                    col,
-                    _filter(!isnothing, (
-                        description=get(attrs, :description, nothing),
-                        ucd=get(attrs, :ucd, nothing),
-                        unit_vot=get(attrs, :unit, nothing)
-                    )),
-                )
-            end
+        modify(__, ∗, _fieldattrs) do col, attrs
+            MetadataArray(
+                col,
+                _filter(!isnothing, (
+                    description=get(attrs, :description, nothing),
+                    ucd=get(attrs, :ucd, nothing),
+                    unit_vot=get(attrs, :unit, nothing)
+                )),
+            )
         end
+        _container_from_components(result_type, colnames .=> __)
     end
 end
 
@@ -144,20 +140,20 @@ end
 
 unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 
-function _filltable!(res, tblx)
+function _filltable!(cols, tblx)
     ns = ["ns" => namespace(tblx)]
     datax = @p tblx  findall("ns:DATA", __, ns)  only
     childx = first(eachelement(datax))
     if nodename(childx) == "TABLEDATA"
-        _filltable!(res, tblx, Val(:TABLEDATA))
+        _filltable!(cols, tblx, Val(:TABLEDATA))
     elseif nodename(childx) == "BINARY2"
-        _filltable!(res, tblx, Val(:BINARY2))
+        _filltable!(cols, tblx, Val(:BINARY2))
     else
         error("Unsupported table data element: $(nodename(childx))")
     end
 end
 
-function _filltable!(res, tblx, ::Val{:BINARY2})
+function _filltable!(cols, tblx, ::Val{:BINARY2})
     streamx = @p let
         tblx
         @aside ns = ["ns" => namespace(__)]
@@ -175,7 +171,7 @@ function _filltable!(res, tblx, ::Val{:BINARY2})
         @assert i ≤ length(dataraw)
         nullbytes = @view dataraw[i:i+nnullbytes-1]
         i += nnullbytes
-        for (icol, (col, colspec)) in enumerate(zip(Tables.columns(res), fieldattrs(tblx)))
+        for (icol, (col, colspec)) in enumerate(zip(cols, fieldattrs(tblx)))
             if nth_bit(nullbytes[div(icol-1, 8)+1], mod(icol-1, 8)+1)
                 push!(col, missing)
                 continue
@@ -194,10 +190,10 @@ function _filltable!(res, tblx, ::Val{:BINARY2})
             push!(col, value)
         end
     end
-    return res
+    return cols
 end
 
-function _filltable!(res, tblx, ::Val{:TABLEDATA})
+function _filltable!(cols, tblx, ::Val{:TABLEDATA})
     trs = @p let
         tblx
         @aside ns = ["ns" => namespace(__)]
@@ -205,11 +201,11 @@ function _filltable!(res, tblx, ::Val{:TABLEDATA})
         only
         findall("ns:TR", __, ns)
     end
-    for col in Tables.columns(res)
+    for col in cols
         sizehint!(col, length(trs))
     end
     foreach(trs) do tr
-        for (col, td) in zip(Tables.columns(res), eachelementptr(tr))
+        for (col, td) in zip(cols, eachelementptr(tr))
             @assert nodename_sv(td) == "TD"
             @multiifs(
                 (Bool, UInt8, Char, String, Int16, Int32, Int64, Float32, Float64, ComplexF32, ComplexF64),
@@ -219,7 +215,7 @@ function _filltable!(res, tblx, ::Val{:TABLEDATA})
             )
         end
     end
-    return res
+    return cols
 end
 
 function tblxml(votfile; strict::Bool)
