@@ -103,7 +103,7 @@ end
 function _parse_binary(::Type{Vector{T}}, data) where {T}
     nbyte = sizeof(T)
     nel = length(data) ÷ nbyte
-    [_parse_binary(T, data[i*nbyte+1:i*nbyte+nbyte]) for i in 0:nel-1]
+    [_parse_binary(T, @view data[i*nbyte+1:i*nbyte+nbyte]) for i in 0:nel-1]
 end
 
 _unparse(::Missing) = ""
