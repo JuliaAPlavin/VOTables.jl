@@ -172,7 +172,8 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
     end
     streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
     dataraw = nodecontent_sv(base64decode, streamx)
-    nnullbytes = let ncols = length(fieldattrs(tblx))
+    _fieldattrs = fieldattrs(tblx)
+    nnullbytes = let ncols = length(_fieldattrs)
         cld(ncols, 8)
     end
     i = 1
@@ -181,7 +182,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
         @assert i ≤ length(dataraw)
         nullbytes = @view dataraw[i:i+nnullbytes-1]
         i += nnullbytes
-        for (icol, (col, colspec)) in enumerate(zip(cols, fieldattrs(tblx)))
+        for (icol, (col, colspec)) in enumerate(zip(cols, _fieldattrs))
             len = @something(
                 vo2nbytes_fixwidth(colspec),
                 let
