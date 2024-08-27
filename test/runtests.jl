@@ -211,6 +211,30 @@ end
     @test length(tbl) == 5
 end
 
+@testitem "read formats consistency" begin
+    # These files are written (using STILTS) by a script in the data directory.
+    # They have different serializations but, as far as possible,
+    # identical content.
+    files = map(fmt -> joinpath(@__DIR__, "data/test-$fmt.vot"), ["tabledata", "binary2"]) #, "binary"])
+    tables = VOTables.read.(files)
+    # @test length(tables) == 3
+    basetbl = tables[1]
+    @testset for i in 1:2
+        tbl = tables[i]
+        @test length(tbl) == 10
+        @test propertynames(tbl) == propertynames(basetbl)
+        @testset for p in propertynames(tbl)
+            col = getproperty(tbl, p)
+            basecol = getproperty(basetbl, p)
+            if eltype(col) <: Union{Missing,AbstractString}
+                @test isequal(coalesce.(col, ""), coalesce.(basecol, ""))
+            else
+                @test isequal(col, basecol)
+            end
+        end
+    end
+end
+
 @testitem "write" begin
     using StructArrays.Tables
     using DictArrays, StructArrays

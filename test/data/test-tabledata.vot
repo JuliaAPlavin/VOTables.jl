@@ -1,0 +1,124 @@
+<?xml version='1.0'?>
+<VOTABLE version="1.4"
+ xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<!--
+ !  VOTable written by STIL version 4.2-1 (uk.ac.starlink.votable.VOTableWriter)
+ !  at 2024-07-19T14:53:18
+ !-->
+<RESOURCE>
+<TABLE nrows="10">
+<FIELD datatype="short" name="s_byte"/>
+<FIELD datatype="short" name="s_short"/>
+<FIELD datatype="int" name="s_int"/>
+<FIELD datatype="long" name="s_long"/>
+<FIELD datatype="float" name="s_float"/>
+<FIELD datatype="double" name="s_double"/>
+<FIELD arraysize="*" datatype="char" name="s_string"/>
+<FIELD datatype="boolean" name="s_boolean"/>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0</TD>
+    <TD>0.0</TD>
+    <TD>0.0</TD>
+    <TD>zero</TD>
+    <TD>F</TD>
+  </TR>
+  <TR>
+    <TD></TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1</TD>
+    <TD>1.0</TD>
+    <TD>1.0</TD>
+    <TD>one</TD>
+    <TD>T</TD>
+  </TR>
+  <TR>
+    <TD>2</TD>
+    <TD></TD>
+    <TD>2</TD>
+    <TD>2</TD>
+    <TD>2.0</TD>
+    <TD>2.0</TD>
+    <TD>two</TD>
+    <TD>F</TD>
+  </TR>
+  <TR>
+    <TD>3</TD>
+    <TD>3</TD>
+    <TD></TD>
+    <TD>3</TD>
+    <TD>3.0</TD>
+    <TD>3.0</TD>
+    <TD>three</TD>
+    <TD>T</TD>
+  </TR>
+  <TR>
+    <TD>4</TD>
+    <TD>4</TD>
+    <TD>4</TD>
+    <TD></TD>
+    <TD>4.0</TD>
+    <TD>4.0</TD>
+    <TD>four</TD>
+    <TD>F</TD>
+  </TR>
+  <TR>
+    <TD>5</TD>
+    <TD>5</TD>
+    <TD>5</TD>
+    <TD>5</TD>
+    <TD></TD>
+    <TD>5.0</TD>
+    <TD>five</TD>
+    <TD>T</TD>
+  </TR>
+  <TR>
+    <TD>6</TD>
+    <TD>6</TD>
+    <TD>6</TD>
+    <TD>6</TD>
+    <TD>6.0</TD>
+    <TD></TD>
+    <TD>six</TD>
+    <TD>F</TD>
+  </TR>
+  <TR>
+    <TD>7</TD>
+    <TD>7</TD>
+    <TD>7</TD>
+    <TD>7</TD>
+    <TD>7.0</TD>
+    <TD>7.0</TD>
+    <TD></TD>
+    <TD>T</TD>
+  </TR>
+  <TR>
+    <TD>8</TD>
+    <TD>8</TD>
+    <TD>8</TD>
+    <TD>8</TD>
+    <TD>8.0</TD>
+    <TD>8.0</TD>
+    <TD>' "\""' ; '&amp;&lt;&gt;</TD>
+    <TD></TD>
+  </TR>
+  <TR>
+    <TD>9</TD>
+    <TD>9</TD>
+    <TD>9</TD>
+    <TD>9</TD>
+    <TD>NaN</TD>
+    <TD>NaN</TD>
+    <TD></TD>
+    <TD>T</TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>
