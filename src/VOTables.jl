@@ -1,6 +1,7 @@
 @doc Base.read(joinpath(dirname(@__DIR__), "README.md"), String) module VOTables
 
 using EzXML
+using Base64
 using StringViews
 using UnsafeArrays: UnsafeArray
 using Mmap
@@ -141,6 +142,86 @@ end
 unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 
 function _filltable!(res, tblx)
+    ns = ["ns" => namespace(tblx)]
+    datax = @p tblx  findall("ns:DATA", __, ns)  only
+    childx = first(eachelement(datax))
+    if nodename(childx) == "TABLEDATA"
+        _filltable!(res, tblx, Val(:TABLEDATA))
+    elseif nodename(childx) == "BINARY2"
+        _filltable!(res, tblx, Val(:BINARY2))
+    else
+        error("Unsupported table data element: $(nodename(childx))")
+    end
+end
+
+function _filltable!(res, tblx, ::Val{:BINARY2})
+    streamx = @p let
+        tblx
+        @aside ns = ["ns" => namespace(__)]
+        findall("ns:DATA/ns:BINARY2/ns:STREAM", __, ns)
+        only
+    end
+    streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
+    dataraw = base64decode(nodecontent(streamx))
+    nnullbytes = let ncols = length(fieldattrs(tblx))
+        cld(ncols, 8)
+    end
+    i = 1
+    while true
+        i == length(dataraw) + 1 && break
+        @assert i ≤ length(dataraw)
+        nullbytes = @view dataraw[i:i+nnullbytes-1]
+        i += nnullbytes
+        for (icol, (col, colspec)) in enumerate(zip(Tables.columns(res), fieldattrs(tblx)))
+            if nth_bit(nullbytes[div(icol-1, 8)+1], mod(icol-1, 8)+1)
+                push!(col, missing)
+                continue
+            end
+            len = _get_fixwidth(colspec)
+            len = if isnothing(len)
+                lenbytes = @view dataraw[i:i+4-1]
+                i += 4
+                len = _parse_binary(Int32, lenbytes)
+            else
+                len
+            end
+            curdata = @view dataraw[i:i+len-1]
+            i += len
+            value = _parse_binary(vo2jltype(colspec), curdata)
+            push!(col, value)
+        end
+    end
+    return res
+end
+
+nth_bit(m, N) = Bool(m & (1<<(N-1)) >> (N-1))
+
+_parse_binary(::Type{String}, data) = String(copy(data))
+_parse_binary(::Type{T}, data) where {T<:Union{Bool,Int,Int32,Int16,Float32,Float64,ComplexF32,ComplexF64}} = reinterpret(T, data) |> only |> bswap
+
+
+function _get_fixwidth(colspec)
+    get(colspec, :arraysize, nothing) == "*" && return nothing
+    N = get(colspec, :arraysize, 1)
+    return N * TYPE_VO_TO_NBYTES[colspec[:datatype]]
+end
+
+const TYPE_VO_TO_NBYTES = Dict(
+    "boolean" => 1,
+    # "bit" => 1,
+    "unsignedByte" => UInt8,
+    "char" => 1,
+    "unicodeChar" => 2,
+    "short" => 2,
+    "int" => 4,
+    "long" => 8,
+    "float" => 4,
+    "double" => 8,
+    "floatComplex" => 8,
+    "doubleComplex" => 16,
+)
+
+function _filltable!(res, tblx, ::Val{:TABLEDATA})
     trs = @p let
         tblx
         @aside ns = ["ns" => namespace(__)]
