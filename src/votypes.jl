@@ -87,6 +87,8 @@ function _parse(::Type{T}, s) where {T <: Complex}
     complex(_parse(real(T), re), _parse(real(T), im))
 end
 
+_parse(::Type{Vector{T}}, s) where {T} = map(x -> _parse(T, x), split(s))
+
 
 _parse_binary(::Type{String}, data) = String(copy(data))
 _parse_binary(::Type{Char}, data) = Char(only(data))

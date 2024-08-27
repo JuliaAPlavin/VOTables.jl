@@ -219,8 +219,8 @@ function _filltable!(cols, tblx, ::Val{:TABLEDATA})
         for (col, td) in zip(cols, eachelementptr(tr))
             @assert nodename_sv(td) == "TD"
             @multiifs(
-                (Bool, UInt8, Char, String, Int16, Int32, Int64, Float32, Float64, ComplexF32, ComplexF64),
-                col isa AbstractVector{Union{Missing, _}},
+                (Bool, UInt8, Char, String, Int16, Int32, Int64, Float32, Float64, ComplexF32, ComplexF64, Vector),
+                col isa AbstractVector{<:Union{Missing, _}},
                 nodecontent_sv(content -> push!(col, _parse(eltype(col), content)), td),
                 error("Shouldn't happen. Got eltype(col) == $(eltype(col))")
             )
