@@ -183,14 +183,14 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
         nullbytes = @view dataraw[i:i+nnullbytes-1]
         i += nnullbytes
         for (icol, (col, colspec)) in enumerate(zip(cols, fieldattrs(tblx)))
-            len = vo2nbytes_fixwidth(colspec)
-            len = if isnothing(len)
-                lenbytes = @view dataraw[i:i+4-1]
-                i += 4
-                len = _parse_binary(Int32, lenbytes)
-            else
-                len
-            end
+            len = @something(
+                vo2nbytes_fixwidth(colspec),
+                let
+                    lenbytes = @view dataraw[i:i+4-1]
+                    i += 4
+                    _parse_binary(Int32, lenbytes)
+                end
+            )
             curdata = @view dataraw[i:i+len-1]
             i += len
             if nth_bit(nullbytes[div(icol-1, 8)+1], 8-mod(icol-1, 8))
