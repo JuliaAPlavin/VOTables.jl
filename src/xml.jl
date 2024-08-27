@@ -26,8 +26,12 @@ function nodecontent_sv(f, ptr::Ptr{EzXML._Node})
         (Ptr{Cvoid},),
         ptr) != C_NULL
     str = StringView(str_ptr)
-    f(str)
-    Libc.free(str_ptr)
+    res = try
+        f(str)
+    finally
+        Libc.free(str_ptr)
+    end
+    return res
 end
 
 eachelementptr(node::EzXML.Node, backward::Bool=false) = ChildElementPtrIterator(node, backward)
