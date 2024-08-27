@@ -30,7 +30,7 @@ UnitfulExt = "Unitful"
 
 [compat]
 AccessorsExtra = "0.1.66"
-AstroAngles = "0.1.3"
+AstroAngles = "0.1.3, 0.2"
 Base64 = "1"
 DataAPI = "1.15.0"
 DataPipes = "0.3.8"
