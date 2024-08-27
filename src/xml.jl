@@ -18,7 +18,7 @@ function nodename_sv(ptr::Ptr{EzXML._Node})
     StringView(node_str.name)
 end
 
-# nodecontent_sv(f, node::EzXML.Node) = nodecontent_sv(f, node.ptr)
+nodecontent_sv(f, node::EzXML.Node) = nodecontent_sv(f, node.ptr)
 function nodecontent_sv(f, ptr::Ptr{EzXML._Node})
     str_ptr = EzXML.@check ccall(
         (:xmlNodeGetContent, EzXML.libxml2),

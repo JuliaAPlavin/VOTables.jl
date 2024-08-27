@@ -171,7 +171,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
         only
     end
     streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
-    dataraw = base64decode(nodecontent(streamx))
+    dataraw = nodecontent_sv(base64decode, streamx)
     nnullbytes = let ncols = length(fieldattrs(tblx))
         cld(ncols, 8)
     end
