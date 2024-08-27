@@ -167,8 +167,7 @@ end
 function _filltable!(cols, tblx, ::Val{:BINARY2})
     streamx = @p let
         tblx
-        @aside ns = ["ns" => namespace(__)]
-        findall("ns:DATA/ns:BINARY2/ns:STREAM", __, ns)
+        _findall("ns:DATA/ns:BINARY2/ns:STREAM", __, _namespaces(__))
         only
     end
     streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
