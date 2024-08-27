@@ -4,9 +4,8 @@ using EzXML
 using StringViews
 using UnsafeArrays: UnsafeArray
 using Mmap
-using DictArrays
-using DictArrays.StructArrays
-using DictArrays.Tables
+using StructArrays
+using Tables
 using Dictionaries
 using MetadataArrays
 using DataAPI: metadata, colmetadata
@@ -22,9 +21,9 @@ include("xml.jl")
 include("misc.jl")
 
 
-"""    VOTables.read([result_type=DictArray], votfile; [postprocess=true], [unitful=false])
+"""    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=false])
 
-Read a VOTable from a file or another `IO` object. By default, the result is a `DictArray`: a Julian collection and table. Alternatively, specify `result_type=StructArray`.
+Read a VOTable from a file or another `IO` object. By default, the result is a `StructArray`: a Julian collection and table. Alternatively, specify `result_type=StructArray`.
 
 - `postprocess=true`: do further processing of values, other than parsing formal VOTable datatypes. Includes parsing dates and times, and converting units to `Unitful.jl`; set to `false` to disable all of this.
 - `unitful=false`: parse units from VOTable metadata to `Unitful.jl` units. Uses units from all loaded `Unitful`-compatible packages, ignores unknown units and shows warnings for them. Requires `postprocess=true`.
@@ -38,7 +37,7 @@ end
 # support Cols()?
 # support <COOSYS> tag
 
-read(votfile; kwargs...) = read(DictArray, votfile; kwargs...)
+read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
 function read(result_type, votfile; postprocess=true, unitful=false, strict=true)
     tblx = tblxml(votfile; strict)
@@ -101,7 +100,6 @@ function write(votfile, tbl)
     EzXML.write(votfile, doc)
 end
 
-_container_from_components(::Type{DictArray}, pairs) = @p pairs |> Dictionary(first.(__), last.(__)) |> DictArray
 _container_from_components(::Type{StructArray}, pairs) = @p pairs |> NamedTuple{Tuple(first.(__))}(Tuple(last.(__))) |> StructArray
 
 function postprocess_col(col, attrs; unitful::Bool)
@@ -215,7 +213,7 @@ fieldattrs(tblxml) = @p let
     end
 end
 
-TYPE_VO_TO_JL = Dict(
+const TYPE_VO_TO_JL = Dict(
     "boolean" => Bool,
     "bit" => Bool,
     "unsignedByte" => UInt8,

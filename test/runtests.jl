@@ -27,8 +27,8 @@ using TestItemRunner
     @test colmetadata(tbl, :ID) == (description = "Source name in truncated B1950.0 coordinates", ucd = "meta.id;meta.main")
     @test colmetadata(tbl)[:Epoch] == colmetadata(tbl, :Epoch)
 
-    @test isequal(Tables.columns(VOTables.read(DictArray, votfile)), Tables.columns(tbl))
-    @test isequal(Tables.columns(VOTables.read(StructArray, votfile)), Tables.columns(StructArray(tbl)))
+    @test isequal(Tables.columns(VOTables.read(DictArray, votfile)), Tables.columns(DictArray(tbl)))
+    @test isequal(Tables.columns(VOTables.read(StructArray, votfile)), Tables.columns(tbl))
 
     using Unitful
     tbl = VOTables.read(votfile; unitful=true)
