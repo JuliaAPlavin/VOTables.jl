@@ -1,5 +1,5 @@
 # put in some package? see ManualDispatch?
-macro multiifs(vals, cond, body, elsebody)
+macro multiifs(vals, cond, body, elsebody=body)
     @assert Base.isexpr(vals, :tuple)
     vals = vals.args
     foldr(vals, init=elsebody) do val, prev
