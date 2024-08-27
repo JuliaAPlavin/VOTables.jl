@@ -100,7 +100,19 @@ function write(votfile, tbl)
 end
 
 
-_container_from_components(::Type{StructArray}, pairs) = @p pairs |> NamedTuple{Tuple(first.(__))}(Tuple(last.(__))) |> StructArray
+function _container_from_components(::Type{StructArray}, pairs)
+    keys = map(first, pairs)
+    vals = map(last, pairs)
+    while !allunique(keys)
+        for (i, key) in enumerate(keys)
+            if any(==(key), keys[1:i-1])
+                @warn "Duplicate column name '$key' found. The second occurrence will be renamed to '$(Symbol(key, "_"))'."
+                keys[i] = Symbol(string(key, "_"))
+            end
+        end
+    end
+    NamedTuple{Tuple(keys)}(Tuple(vals)) |> StructArray
+end
 
 function postprocess_col(col, attrs; unitful::Bool)
     ucds = split(get(attrs, :ucd, ""), ";")
