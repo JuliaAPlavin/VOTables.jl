@@ -155,14 +155,10 @@ unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 function _filltable!(cols, tblx)
     datax = @p tblx  _findall("ns:DATA", __, _namespaces(__))  only
     childx = first(eachelement(datax))
-    if nodename(childx) == "TABLEDATA"
-        _filltable!(cols, tblx, Val(:TABLEDATA))
-    elseif nodename(childx) == "BINARY2"
-        _filltable!(cols, tblx, Val(:BINARY2))
-    else
-        error("Unsupported table data element: $(nodename(childx))")
-    end
+    _filltable!(cols, tblx, Val(Symbol(nodename(childx))))
 end
+
+_filltable!(cols, tblx, ::Val{F}) where F = error("Unsupported table data element: $F")
 
 function _filltable!(cols, tblx, ::Val{:BINARY2})
     streamx = @p let
@@ -196,7 +192,44 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
             if nth_bit(nullbytes[div(icol-1, 8)+1], 8-mod(icol-1, 8))
                 push!(col, missing)
             else
-                value = _parse_binary(vo2jltype(colspec), curdata)
+                push!(col, _parse_binary(vo2jltype(colspec), curdata))
+            end
+        end
+    end
+    return cols
+end
+
+function _filltable!(cols, tblx, ::Val{:BINARY})
+    streamx = @p let
+        tblx
+        _findall("ns:DATA/ns:BINARY/ns:STREAM", __, _namespaces(__))
+        only
+    end
+    streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
+    dataraw = nodecontent_sv(base64decode, streamx)
+    _fieldattrs = Dictionary{Symbol,Any}.(fieldattrs(tblx))
+    for (col, colspec) in zip(cols, _fieldattrs)
+        haskey(colspec, :nulltxt) && insert!(colspec, :nullvalue, _parse(eltype(col), colspec[:nulltxt]))
+    end
+    i = 1
+    while true
+        i == length(dataraw) + 1 && break
+        @assert i ≤ length(dataraw)
+        for (icol, (col, colspec)) in enumerate(zip(cols, _fieldattrs))
+            len = @something(
+                vo2nbytes_fixwidth(colspec),
+                let
+                    lenbytes = @view dataraw[i:i+4-1]
+                    i += 4
+                    _parse_binary(Int32, lenbytes)
+                end
+            )
+            curdata = @view dataraw[i:i+len-1]
+            i += len
+            value = _parse_binary(vo2jltype(colspec), curdata)
+            if haskey(colspec, :nullvalue) && colspec[:nullvalue] == value
+                push!(col, missing)
+            else
                 push!(col, value)
             end
         end
@@ -274,8 +307,14 @@ fieldattrs(tblxml) = @p let
     _findall("ns:FIELD", __, ns)
     map() do fieldxml
         attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
+        
         desc = @p fieldxml |> _findall("ns:DESCRIPTION", __, ns) |> maybe(nodecontent ∘ only)(__)
         isnothing(desc) || insert!(attrs, :description, desc)
+        
+        values = @p fieldxml |> _findall("ns:VALUES", __, ns) |> filter(v->haskey(v, "null"))
+        length(values) > 1 && @warn "Multiple null <VALUES> tags found for field $(attrs[:name]), using the first one"
+        length(values) ≥ 1 && insert!(attrs, :nulltxt, values[1]["null"])
+        
         return attrs
     end
 end

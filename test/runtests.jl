@@ -215,11 +215,11 @@ end
     # These files are written (using STILTS) by a script in the data directory.
     # They have different serializations but, as far as possible,
     # identical content.
-    files = map(fmt -> joinpath(@__DIR__, "data/test-$fmt.vot"), ["tabledata", "binary2"]) #, "binary"])
+    files = map(fmt -> joinpath(@__DIR__, "data/test-$fmt.vot"), ["tabledata", "binary2", "binary"])
     tables = VOTables.read.(files)
-    # @test length(tables) == 3
+    @test length(tables) == 3
     basetbl = tables[1]
-    @testset for i in 1:2
+    @testset for i in 1:length(tables)
         tbl = tables[i]
         @test length(tbl) == 10
         @test propertynames(tbl) == propertynames(basetbl)
@@ -228,6 +228,8 @@ end
             basecol = getproperty(basetbl, p)
             if eltype(col) <: Union{Missing,AbstractString}
                 @test isequal(coalesce.(col, ""), coalesce.(basecol, ""))
+            elseif eltype(col) <: Union{Missing,AbstractFloat}
+                @test isequal(coalesce.(col, NaN), coalesce.(basecol, NaN))
             else
                 @test isequal(col, basecol)
             end

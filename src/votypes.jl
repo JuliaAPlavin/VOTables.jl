@@ -97,6 +97,7 @@ function _parse_binary(::Type{Bool}, data)
     c = data[1] |> Char
     c in ('T', 't', '1') && return true
     c in ('F', 'f', '0') && return false
+    isspace(c) && return missing
     error("Unknown Bool value: $c")
 end
 
