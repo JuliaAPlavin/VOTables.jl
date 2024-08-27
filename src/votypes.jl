@@ -92,8 +92,13 @@ _parse(::Type{Vector{T}}, s) where {T} = map(x -> _parse(T, x), split(s))
 
 _parse_binary(::Type{String}, data) = String(copy(data))
 _parse_binary(::Type{Char}, data) = Char(only(data))
-_parse_binary(::Type{T}, data) where {T<:Union{Bool,Int,Int32,Int16,Float32,Float64,ComplexF32,ComplexF64}} = reinterpret(T, data) |> only |> bswap
-
+_parse_binary(::Type{T}, data) where {T<:Union{Bool,Int64,Int32,Int16,Float32,Float64,ComplexF32,ComplexF64}} = reinterpret(T, data) |> only |> bswap
+function _parse_binary(::Type{Bool}, data)
+    c = data[1] |> Char
+    c in ('T', 't', '1') && return true
+    c in ('F', 'f', '0') && return false
+    error("Unknown Bool value: $c")
+end
 
 _unparse(::Missing) = ""
 _unparse(x::Complex) = "$(real(x)) $(imag(x))"

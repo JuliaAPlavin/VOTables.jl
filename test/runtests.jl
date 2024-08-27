@@ -187,6 +187,14 @@ end
     @test isequal(tbl[12], (db_table_name = missing, description = missing, schema_name = "hsc_v2", size = 90751872, size_bytes = 52785233920, table_index = -1, table_name = "hsc_v2.hubble_sc2", table_type = "table", utype = missing))
 end
 
+@testitem "read binary - eltypes" begin
+    tbl = VOTables.read(joinpath(@__DIR__, "data/test-binary2.vot"))
+    @test length(tbl) == 10
+    @test isequal(tbl.s_short, [0, 1, missing, 3, 4, 5, 6, 7, 8, 9])
+    @test isequal(tbl.s_boolean, [false, true, false, true, false, true, false, true, missing, true])
+    @test isequal(tbl[3], (s_byte=2, s_short=missing, s_int=2, s_long=2, s_float=2.0f0, s_double=2.0, s_string="two", s_boolean=false))
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles
