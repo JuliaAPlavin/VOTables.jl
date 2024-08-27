@@ -6,7 +6,7 @@
 # Only run manually because it requires Java and STILTS to be installed
 
 nrow=10
-coltypes=sf
+coltypes=sfv
 
 test -r stilts.jar || curl -OL http://www.starlink.ac.uk/stilts/stilts.jar
 for fmt in tabledata binary2 binary
@@ -15,6 +15,6 @@ do
    echo "Writing $file"
    Fmt=`echo $fmt | tr a-z A-Z`
    java -jar stilts.jar tpipe in=:test:${nrow},${coltypes} \
-                              cmd='delcols "f_string"' \
+                              cmd='delcols "f_string v_string"' \
                               ofmt="votable(format=$Fmt)" out=$file
 done

@@ -184,7 +184,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
                 let
                     lenbytes = @view dataraw[i:i+4-1]
                     i += 4
-                    _parse_binary(Int32, lenbytes)
+                    _parse_binary(Int32, lenbytes) * TYPE_VO_TO_NBYTES[colspec[:datatype]]
                 end
             )
             curdata = @view dataraw[i:i+len-1]
@@ -221,7 +221,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY})
                 let
                     lenbytes = @view dataraw[i:i+4-1]
                     i += 4
-                    _parse_binary(Int32, lenbytes)
+                    _parse_binary(Int32, lenbytes) * TYPE_VO_TO_NBYTES[colspec[:datatype]]
                 end
             )
             curdata = @view dataraw[i:i+len-1]
