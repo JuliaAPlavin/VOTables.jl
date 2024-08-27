@@ -234,8 +234,6 @@ end
             elseif eltype(col) <: Union{Missing,AbstractArray}
                 squashempty(a) = a -> ismissing(a) || isempty(a) ? missing : a
                 @test isequal(map(squashempty, col), map(squashempty, basecol))
-            elseif isBINARY && eltype(col) <: AbstractArray
-                @test all(ismissing(bc) ? true : isequal(c, bc) for (c, bc) in zip(col, basecol))
             else
                 @test isequal(col, basecol)
             end
