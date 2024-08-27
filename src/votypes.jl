@@ -67,7 +67,12 @@ end
 _parse(::Type{Union{Missing, T}}, s) where {T} = isempty(s) ? missing : _parse(T, s)
 _parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
 
-_parse(::Type{T}, s) where {T} = parse(T, s)
+_parse(::Type{T}, s) where {T} = try
+    parse(T, s)
+catch e
+    @warn "Error parsing $s as $T" exception=e
+    missing
+end
 _parse(::Type{Char}, s) = only(s)
 _parse(::Type{String}, s) = s
 function _parse(::Type{Bool}, s)

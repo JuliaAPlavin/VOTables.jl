@@ -137,6 +137,23 @@ end
     @test tbl[1].dec_error == 0.10277003f0u"mas"
 end
 
+@testitem "read 7" begin
+    using Dates
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/ned_sed.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    tbl = VOTables.read(votfile)
+    @test length(tbl) == 629
+    @test tbl[1].DataFluxValue == 1.07e-15
+
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 629
+    @test tbl[1].DataFluxValue == 1.07e-15u"Jy"
+end
+
 @testitem "read binary" begin
     votgzfile = joinpath(@__DIR__, "data/binary.gz")
     votfile = tempname()

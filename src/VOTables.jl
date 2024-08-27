@@ -141,8 +141,7 @@ end
 unit_viz_to_jl(_, _) = error("Load Unitful.jl to use units")
 
 function _filltable!(cols, tblx)
-    ns = ["ns" => namespace(tblx)]
-    datax = @p tblx  findall("ns:DATA", __, ns)  only
+    datax = @p tblx  _findall("ns:DATA", __, _namespaces(__))  only
     childx = first(eachelement(datax))
     if nodename(childx) == "TABLEDATA"
         _filltable!(cols, tblx, Val(:TABLEDATA))
@@ -196,10 +195,10 @@ end
 function _filltable!(cols, tblx, ::Val{:TABLEDATA})
     trs = @p let
         tblx
-        @aside ns = ["ns" => namespace(__)]
-        findall("ns:DATA/ns:TABLEDATA", __, ns)
+        @aside ns = _namespaces(__)
+        _findall("ns:DATA/ns:TABLEDATA", __, ns)
         only
-        findall("ns:TR", __, ns)
+        _findall("ns:TR", __, ns)
     end
     for col in cols
         sizehint!(col, length(trs))
@@ -224,10 +223,10 @@ function tblxml(votfile; strict::Bool)
     tables = @p let 
         xml
         root
-        @aside ns = ["ns" => namespace(__)]
-        findall("ns:RESOURCE/ns:TABLE", __, ns)
+        @aside ns = _namespaces(__)
+        _findall("ns:RESOURCE/ns:TABLE", __, ns)
     end
-    infos = @p xml |> root |> findall("ns:RESOURCE/ns:INFO", __, ["ns" => namespace(__)])
+    infos = @p xml |> root |> _findall("ns:RESOURCE/ns:INFO", __, _namespaces(__))
     errorinfos = @p infos |> filter(uppercase(_["name"]) == "QUERY_STATUS" && uppercase(_["value"]) == "ERROR")
     if isempty(tables)
         if isempty(errorinfos)
@@ -248,19 +247,18 @@ end
 
 description(tblxml) = @p let
     tblxml
-    @aside ns = ["ns" => namespace(__)]
-    findall("ns:DESCRIPTION", __, ns)
+    _findall("ns:DESCRIPTION", __, _namespaces(__))
     only
     nodecontent
 end
 
 fieldattrs(tblxml) = @p let
     tblxml
-    @aside ns = ["ns" => namespace(__)]
-    findall("ns:FIELD", __, ns)
+    @aside ns = _namespaces(__)
+    _findall("ns:FIELD", __, ns)
     map() do fieldxml
         attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
-        desc = @p fieldxml |> findall("ns:DESCRIPTION", __, ns) |> maybe(only)(__) |> maybe(nodecontent)(__)
+        desc = @p fieldxml |> _findall("ns:DESCRIPTION", __, ns) |> maybe(nodecontent ∘ only)(__)
         isnothing(desc) || insert!(attrs, :description, desc)
         return attrs
     end
