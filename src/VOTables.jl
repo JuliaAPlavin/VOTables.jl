@@ -233,6 +233,7 @@ function _filltable!(cols, tblx, ::Val{:TABLEDATA})
 end
 
 function tblxml(votfile; strict::Bool)
+    isfile(votfile) || throw(SystemError("""opening file "$votfile": No such file or directory"""))
     # xml = @p Base.read(votfile, String) |> parsexml
     xml = @p StringView(mmap(votfile)) |> parsexml
     tables = @p let 
