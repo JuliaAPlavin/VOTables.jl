@@ -58,9 +58,10 @@ function jl2votype(T::Type)
 end
 
 function vo2nbytes_fixwidth(colspec)
-    get(colspec, :arraysize, nothing) == "*" && return nothing
-    N = get(colspec, :arraysize, 1)
-    return N * TYPE_VO_TO_NBYTES[colspec[:datatype]]
+    arraysize = get(colspec, :arraysize, "1")
+    arraysize[end] == '*' && return nothing
+    nel = parse.(Int64, split(arraysize, "x")) |> prod
+    return nel * TYPE_VO_TO_NBYTES[colspec[:datatype]]
 end
 
 
@@ -98,6 +99,11 @@ function _parse_binary(::Type{Bool}, data)
     c in ('T', 't', '1') && return true
     c in ('F', 'f', '0') && return false
     return missing
+end
+function _parse_binary(::Type{Vector{T}}, data) where {T}
+    nbyte = sizeof(T)
+    nel = length(data) ÷ nbyte
+    [_parse_binary(T, data[i*nbyte+1:i*nbyte+nbyte]) for i in 0:nel-1]
 end
 
 _unparse(::Missing) = ""

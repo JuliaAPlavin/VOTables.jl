@@ -192,7 +192,7 @@ end
     @test length(tbl) == 10
     @test isequal(tbl.s_short, [0, 1, missing, 3, 4, 5, 6, 7, 8, 9])
     @test isequal(tbl.s_boolean, [false, true, false, true, false, true, false, true, missing, true])
-    @test isequal(tbl[3], (s_byte=2, s_short=missing, s_int=2, s_long=2, s_float=2.0f0, s_double=2.0, s_string="two", s_boolean=false))
+    @test isequal(tbl[3], (s_byte=2, s_short=missing, s_int=2, s_long=2, s_float=2.0f0, s_double=2.0, s_string="two", s_boolean=false, f_byte=[2, 3, 4], f_short=missing, f_int=[2, 3, 4], f_long=[2, 3, 4], f_float=[2, NaN, 4.5], f_double=[2,NaN, 4.5], f_boolean=[false, true, false]))
 end
 
 @testitem "read error" begin
@@ -219,6 +219,7 @@ end
     tables = VOTables.read.(files)
     @test length(tables) == 3
     basetbl = tables[1]
+    ibinary = 3
     @testset for i in 1:length(tables)
         tbl = tables[i]
         @test length(tbl) == 10
@@ -230,6 +231,8 @@ end
                 @test isequal(coalesce.(col, ""), coalesce.(basecol, ""))
             elseif eltype(col) <: Union{Missing,AbstractFloat}
                 @test isequal(coalesce.(col, NaN), coalesce.(basecol, NaN))
+            elseif i == ibinary && eltype(col) <: AbstractArray
+                @test all(ismissing(c[2]) ? true : isequal(c[1], c[2]) for c in zip(col, basecol))
             else
                 @test isequal(col, basecol)
             end

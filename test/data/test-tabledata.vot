@@ -3,7 +3,7 @@
  xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
 <!--
  !  VOTable written by STIL version 4.2-1 (uk.ac.starlink.votable.VOTableWriter)
- !  at 2024-07-19T14:53:18
+ !  at 2024-07-23T07:04:28
  !-->
 <RESOURCE>
 <TABLE nrows="10">
@@ -15,6 +15,13 @@
 <FIELD datatype="double" name="s_double"/>
 <FIELD arraysize="*" datatype="char" name="s_string"/>
 <FIELD datatype="boolean" name="s_boolean"/>
+<FIELD arraysize="3" datatype="short" name="f_byte"/>
+<FIELD arraysize="3" datatype="short" name="f_short"/>
+<FIELD arraysize="3" datatype="int" name="f_int"/>
+<FIELD arraysize="3" datatype="long" name="f_long"/>
+<FIELD arraysize="3" datatype="float" name="f_float"/>
+<FIELD arraysize="3" datatype="double" name="f_double"/>
+<FIELD arraysize="3" datatype="boolean" name="f_boolean"/>
 <DATA>
 <TABLEDATA>
   <TR>
@@ -26,6 +33,13 @@
     <TD>0.0</TD>
     <TD>zero</TD>
     <TD>F</TD>
+    <TD>0 1 2</TD>
+    <TD>0 1 2</TD>
+    <TD>0 1 2</TD>
+    <TD>0 1 2</TD>
+    <TD>0.0 NaN 2.5</TD>
+    <TD>0.0 NaN 2.5</TD>
+    <TD>false false false</TD>
   </TR>
   <TR>
     <TD></TD>
@@ -36,6 +50,13 @@
     <TD>1.0</TD>
     <TD>one</TD>
     <TD>T</TD>
+    <TD></TD>
+    <TD>1 2 3</TD>
+    <TD>1 2 3</TD>
+    <TD>1 2 3</TD>
+    <TD>1.0 NaN 3.5</TD>
+    <TD>1.0 NaN 3.5</TD>
+    <TD>true false false</TD>
   </TR>
   <TR>
     <TD>2</TD>
@@ -46,6 +67,13 @@
     <TD>2.0</TD>
     <TD>two</TD>
     <TD>F</TD>
+    <TD>2 3 4</TD>
+    <TD></TD>
+    <TD>2 3 4</TD>
+    <TD>2 3 4</TD>
+    <TD>2.0 NaN 4.5</TD>
+    <TD>2.0 NaN 4.5</TD>
+    <TD>false true false</TD>
   </TR>
   <TR>
     <TD>3</TD>
@@ -56,6 +84,13 @@
     <TD>3.0</TD>
     <TD>three</TD>
     <TD>T</TD>
+    <TD>3 4 5</TD>
+    <TD>3 4 5</TD>
+    <TD></TD>
+    <TD>3 4 5</TD>
+    <TD>3.0 NaN 5.5</TD>
+    <TD>3.0 NaN 5.5</TD>
+    <TD>true true false</TD>
   </TR>
   <TR>
     <TD>4</TD>
@@ -66,6 +101,13 @@
     <TD>4.0</TD>
     <TD>four</TD>
     <TD>F</TD>
+    <TD>4 5 6</TD>
+    <TD>4 5 6</TD>
+    <TD>4 5 6</TD>
+    <TD></TD>
+    <TD>4.0 NaN 6.5</TD>
+    <TD>4.0 NaN 6.5</TD>
+    <TD>false false true</TD>
   </TR>
   <TR>
     <TD>5</TD>
@@ -76,6 +118,13 @@
     <TD>5.0</TD>
     <TD>five</TD>
     <TD>T</TD>
+    <TD>5 6 7</TD>
+    <TD>5 6 7</TD>
+    <TD>5 6 7</TD>
+    <TD>5 6 7</TD>
+    <TD></TD>
+    <TD>5.0 NaN 7.5</TD>
+    <TD>true false true</TD>
   </TR>
   <TR>
     <TD>6</TD>
@@ -86,6 +135,13 @@
     <TD></TD>
     <TD>six</TD>
     <TD>F</TD>
+    <TD>6 7 8</TD>
+    <TD>6 7 8</TD>
+    <TD>6 7 8</TD>
+    <TD>6 7 8</TD>
+    <TD>6.0 NaN 8.5</TD>
+    <TD></TD>
+    <TD>false true true</TD>
   </TR>
   <TR>
     <TD>7</TD>
@@ -96,6 +152,13 @@
     <TD>7.0</TD>
     <TD></TD>
     <TD>T</TD>
+    <TD>7 8 9</TD>
+    <TD>7 8 9</TD>
+    <TD>7 8 9</TD>
+    <TD>7 8 9</TD>
+    <TD>7.0 NaN 9.5</TD>
+    <TD>7.0 NaN 9.5</TD>
+    <TD>true true true</TD>
   </TR>
   <TR>
     <TD>8</TD>
@@ -106,6 +169,13 @@
     <TD>8.0</TD>
     <TD>' "\""' ; '&amp;&lt;&gt;</TD>
     <TD></TD>
+    <TD>8 9 10</TD>
+    <TD>8 9 10</TD>
+    <TD>8 9 10</TD>
+    <TD>8 9 10</TD>
+    <TD>8.0 NaN 10.5</TD>
+    <TD>8.0 NaN 10.5</TD>
+    <TD></TD>
   </TR>
   <TR>
     <TD>9</TD>
@@ -116,6 +186,13 @@
     <TD>NaN</TD>
     <TD></TD>
     <TD>T</TD>
+    <TD>9 10 11</TD>
+    <TD>9 10 11</TD>
+    <TD>9 10 11</TD>
+    <TD>9 10 11</TD>
+    <TD>9.0 NaN 11.5</TD>
+    <TD>9.0 NaN 11.5</TD>
+    <TD>true false false</TD>
   </TR>
 </TABLEDATA>
 </DATA>
