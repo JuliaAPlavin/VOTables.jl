@@ -6,7 +6,7 @@
 # Only run manually because it requires Java and STILTS to be installed
 
 nrow=10
-coltypes=sfv
+coltypes=sfvm
 
 test -r stilts.jar || curl -OL http://www.starlink.ac.uk/stilts/stilts.jar
 for fmt in tabledata binary2 binary

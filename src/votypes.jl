@@ -36,7 +36,10 @@ function vo2jltype(colspec)
     if isnothing(arraysize) || arraysize == "1"
         basetype
     elseif occursin("x", arraysize)
-        error("Multimensional arrays not supported yet")
+        # Should really be Array type as below, but requires more work elsewhere
+        # ndim = length(split(arraysize, "x"))
+        # Array{basetype, ndim}
+        Vector{basetype}
     elseif basetype === Char
         @assert occursin(r"^[\d*]+$", arraysize)
         String
