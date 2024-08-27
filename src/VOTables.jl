@@ -20,6 +20,8 @@ export metadata, colmetadata
 include("stringviews.jl")
 include("xml.jl")
 include("misc.jl")
+include("metadata_piracy.jl")
+include("votypes.jl")
 
 
 """    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=false])
@@ -101,6 +103,7 @@ function write(votfile, tbl)
     EzXML.write(votfile, doc)
 end
 
+
 _container_from_components(::Type{StructArray}, pairs) = @p pairs |> NamedTuple{Tuple(first.(__))}(Tuple(last.(__))) |> StructArray
 
 function postprocess_col(col, attrs; unitful::Bool)
@@ -177,7 +180,7 @@ function _filltable!(res, tblx, ::Val{:BINARY2})
                 push!(col, missing)
                 continue
             end
-            len = _get_fixwidth(colspec)
+            len = vo2nbytes_fixwidth(colspec)
             len = if isnothing(len)
                 lenbytes = @view dataraw[i:i+4-1]
                 i += 4
@@ -193,33 +196,6 @@ function _filltable!(res, tblx, ::Val{:BINARY2})
     end
     return res
 end
-
-nth_bit(m, N) = Bool(m & (1<<(N-1)) >> (N-1))
-
-_parse_binary(::Type{String}, data) = String(copy(data))
-_parse_binary(::Type{T}, data) where {T<:Union{Bool,Int,Int32,Int16,Float32,Float64,ComplexF32,ComplexF64}} = reinterpret(T, data) |> only |> bswap
-
-
-function _get_fixwidth(colspec)
-    get(colspec, :arraysize, nothing) == "*" && return nothing
-    N = get(colspec, :arraysize, 1)
-    return N * TYPE_VO_TO_NBYTES[colspec[:datatype]]
-end
-
-const TYPE_VO_TO_NBYTES = Dict(
-    "boolean" => 1,
-    # "bit" => 1,
-    "unsignedByte" => UInt8,
-    "char" => 1,
-    "unicodeChar" => 2,
-    "short" => 2,
-    "int" => 4,
-    "long" => 8,
-    "float" => 4,
-    "double" => 8,
-    "floatComplex" => 8,
-    "doubleComplex" => 16,
-)
 
 function _filltable!(res, tblx, ::Val{:TABLEDATA})
     trs = @p let
@@ -293,88 +269,6 @@ fieldattrs(tblxml) = @p let
         return attrs
     end
 end
-
-const TYPE_VO_TO_JL = Dict(
-    "boolean" => Bool,
-    "bit" => Bool,
-    "unsignedByte" => UInt8,
-    "char" => Char,
-    "unicodeChar" => Char,
-    "short" => Int16,
-    "int" => Int32,
-    "long" => Int64,
-    "float" => Float32,
-    "double" => Float64,
-    "floatComplex" => ComplexF32,
-    "doubleComplex" => ComplexF64,
-)
-
-function vo2jltype(attrs)
-    arraysize = get(attrs, :arraysize, nothing)
-    basetype = TYPE_VO_TO_JL[attrs[:datatype]]
-    if isnothing(arraysize) || arraysize == "1"
-        basetype
-    elseif occursin("x", arraysize)
-        error("Multimensional arrays not supported yet")
-    elseif basetype === Char
-        @assert occursin(r"^[\d*]+$", arraysize)
-        String
-    else
-        @assert occursin(r"^[\d*]+$", arraysize)
-        Vector{basetype}
-    end
-end
-
-jl2votype(::Type{Union{Missing, T}}) where {T} = jl2votype(T)
-jl2votype(::Type{String}) = (datatype="char", arraysize="*")
-jl2votype(::Type{Char}) = (datatype="char",)
-jl2votype(::Type{Bool}) = (datatype="boolean",)
-function jl2votype(T::Type)
-    votypes = findall(==(T), TYPE_VO_TO_JL)
-    isempty(votypes) && error("Don't know how to convert Julia type $T to a VOTable type")
-    length(votypes) > 1 && error("Julia type $T maps to multiple VOTable types: $votypes")
-    return (datatype=only(votypes),)
-end
-
-_parse(::Type{Union{Missing, T}}, s) where {T} = isempty(s) ? missing : _parse(T, s)
-_parse(::Type{Union{Missing, T}}, s::Missing) where {T} = missing
-
-_parse(::Type{T}, s) where {T} = parse(T, s)
-_parse(::Type{Char}, s) = only(s)
-_parse(::Type{String}, s) = s
-function _parse(::Type{Bool}, s)
-    first(s) in ('T', 't', '1') && return true
-    first(s) in ('F', 'f', '0') && return false
-    parse(Bool, s)
-end
-
-function _parse(::Type{T}, s) where {T <: Complex}
-    re, im, rest... = split(s)
-    @assert isempty(rest)
-    complex(_parse(real(T), re), _parse(real(T), im))
-end
-
-_unparse(::Missing) = ""
-_unparse(x::Complex) = "$(real(x)) $(imag(x))"
-_unparse(x) = string(x)
-
-# https://github.com/JuliaLang/julia/pull/50795
-_filter(f, xs::NamedTuple)= xs[filter(k -> f(xs[k]), keys(xs))]
-
-# XXX: should upstream to MetadataArrays
-import DataAPI: metadata, metadatasupport, colmetadata, colmetadatasupport
-metadatasupport(::Type{<:MetadataArray}) = (read=true, write=false)
-metadata(ma::MetadataArray) = MetadataArrays.metadata(ma)
-
-# XXX: should upstream to StructArrays
-colmetadatasupport(::Type{<:StructArray}) = (read=true, write=false)
-colmetadata(sa::StructArray, col::Symbol) = metadata(getproperty(sa, col))
-colmetadata(sa::StructArray) =
-    map(Tables.columns(sa)) do col
-        metadatasupport(typeof(col)).read ? metadata(col) : nothing
-    end
-
-
 
 using PrecompileTools
 @compile_workload begin
