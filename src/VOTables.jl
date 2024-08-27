@@ -193,7 +193,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
             end
             curdata = @view dataraw[i:i+len-1]
             i += len
-            if nth_bit(nullbytes[div(icol-1, 8)+1], mod(icol-1, 8)+1)
+            if nth_bit(nullbytes[div(icol-1, 8)+1], 8-mod(icol-1, 8))
                 push!(col, missing)
             else
                 value = _parse_binary(vo2jltype(colspec), curdata)

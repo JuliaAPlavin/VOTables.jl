@@ -184,7 +184,7 @@ end
 
     tbl = VOTables.read(votfile)
     @test length(tbl) == 49
-    @test isequal(tbl[12], (db_table_name = "", description = "", schema_name = "hsc_v2", size = 90751872, size_bytes = 52785233920, table_index = -1, table_name = missing, table_type = missing, utype = ""))
+    @test isequal(tbl[12], (db_table_name = missing, description = missing, schema_name = "hsc_v2", size = 90751872, size_bytes = 52785233920, table_index = -1, table_name = "hsc_v2.hubble_sc2", table_type = "table", utype = missing))
 end
 
 @testitem "read error" begin
