@@ -16,7 +16,7 @@ const TYPE_VO_TO_JL = Dict(
 
 const TYPE_VO_TO_NBYTES = Dict(
     "boolean" => 1,
-    # "bit" => 1,
+    "bit" => 1,
     "unsignedByte" => 1,
     "char" => 1,
     "unicodeChar" => 2,
