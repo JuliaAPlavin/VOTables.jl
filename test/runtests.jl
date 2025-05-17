@@ -201,6 +201,16 @@ end
     @test tbl[5].obsID == "00000000-0000-0000-a22d-31527058196f"
     @test tbl[5].obsID_ == "00000000-0000-0000-a22d-31527058196f"
 end
+@testitem "read 9" begin
+    # Test for supporting "Angstrom" wavelength specifier
+    # from tables provided by SVO filter service
+    using Unitful
+    votfile = joinpath(@__DIR__, "data", "2MASS.2MASS.J.xml")
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 107
+    @test keys(tbl[1]) == (:Wavelength, :Transmission)
+    @test tbl.Wavelength[1] == 10620.0u"angstrom"
+end
 @testitem "read binary" begin
     votgzfile = joinpath(@__DIR__, "data/binary.gz")
     votfile = tempname()
