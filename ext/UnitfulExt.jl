@@ -35,7 +35,8 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
                 r"\bdeg\b" => "°",
                 r"\barcsec\b" => "arcsecond",
                 r"\barcmin\b" => "arcminute",
-                r"\bum\b" => "μm")
+                r"\bum\b" => "μm",
+                r"\bAngstrom\b" => "angstrom")
             uparse(unit_context=[Unitful; Unitful.unitmodules], __)
         end
     catch exception
