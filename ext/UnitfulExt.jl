@@ -40,9 +40,10 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
             
             # Handle empty vot_unit string
             if isempty(__)
-                __ == "NoUnits"
+                NoUnits
+            else
+                uparse(unit_context=[Unitful; Unitful.unitmodules], __)
             end
-            uparse(unit_context=[Unitful; Unitful.unitmodules], __)
         end
     catch exception
         if exception isa ArgumentError && occursin("could not be found in unit modules", exception.msg)
