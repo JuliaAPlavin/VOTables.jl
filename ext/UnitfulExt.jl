@@ -37,6 +37,11 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
                 r"\barcmin\b" => "arcminute",
                 r"\bum\b" => "μm",
                 r"\bAngstrom\b" => "angstrom")
+            
+            # Handle empty vot_unit string
+            if isempty(__)
+                __ == "NoUnits"
+            end
             uparse(unit_context=[Unitful; Unitful.unitmodules], __)
         end
     catch exception
