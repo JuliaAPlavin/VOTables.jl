@@ -5,6 +5,7 @@ using VOTables.DataPipes
 import VOTables: unit_vot_to_jl, jl2votype, _unparse
 
 function unit_vot_to_jl(col, vot_unit::AbstractString)
+    isempty(vot_unit) && return col
     m = match(r"^(log\(|\[)([^([]+)(\)|\])$", vot_unit)
     vot_unit, postf = if !isnothing(m)
         @info "assuming the decimal logarithm" vot_unit
@@ -37,13 +38,7 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
                 r"\barcmin\b" => "arcminute",
                 r"\bum\b" => "μm",
                 r"\bAngstrom\b" => "angstrom")
-            
-            # Handle empty vot_unit string
-            if isempty(__)
-                NoUnits
-            else
-                uparse(unit_context=[Unitful; Unitful.unitmodules], __)
-            end
+            uparse(unit_context=[Unitful; Unitful.unitmodules], __)
         end
     catch exception
         if exception isa ArgumentError && occursin("could not be found in unit modules", exception.msg)
