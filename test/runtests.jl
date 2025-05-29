@@ -34,7 +34,7 @@ end
     using DictArrays, StructArrays
     using StructArrays.Tables
 
-    votgzfile = joinpath(@__DIR__, "data/votable?-source=J%2FApJ%2F923%2F67%2Ftable2&-out=**&-out.max=100.gz")
+    votgzfile = joinpath(@__DIR__, "data/votable_compressed.gz")
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
