@@ -199,7 +199,7 @@ end
 
     tbl = VOTables.read(votfile; unitful=true)
     @test length(tbl) == 5
-    @test tbl[5].energy_bounds_samples == [4.994e-7, 5.05e-7]
+    @test tbl[5].energy_bounds_samples == [4.994e-7, 5.05e-7]*u"m"
     @test tbl[5].energy_bounds_lower == 4.994e-7u"m"
     @test tbl[5].obsID == "00000000-0000-0000-a22d-31527058196f"
     @test tbl[5].obsID_ == "00000000-0000-0000-a22d-31527058196f"
