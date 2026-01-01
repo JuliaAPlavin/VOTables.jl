@@ -26,6 +26,7 @@ using TestItemRunner
     @test unit_vot_to_jl([1.0], "[W/um]") |> only === 10.0u"W*μm^-1"
     @test unit_vot_to_jl([1.0], "angstrom") |> only === 1.0u"Å"
     @test unit_vot_to_jl([1.0], "Angstrom") |> only === 1.0u"Å"
+    @test unit_vot_to_jl([1.0], "") |> only === 1.0
 end
 
 @testitem "read 1" begin
