@@ -222,6 +222,20 @@ end
     @test isequal(tbl[3], (s_byte=2, s_short=missing, s_int=2, s_long=2, s_float=2.0f0, s_double=2.0, s_string="two", s_boolean=false, f_byte=[2, 3, 4], f_short=missing, f_int=[2, 3, 4], f_long=[2, 3, 4], f_float=[2, NaN, 4.5], f_double=[2,NaN, 4.5], f_boolean=[false, true, false], v_byte=[2], v_short=missing, v_int=[2], v_long=[2], v_float=[2], v_double=[2], v_boolean=[false], m_int=[1002, 1003, 2002, 2003, 3002, 3003, 4002, 4003], m_double=missing))
 end
 
+@testitem "read arrays with units" begin
+    using Unitful, UnitfulAstro
+    using Dates
+    votgzfile = joinpath(@__DIR__, "data/gaia_datalink_multiple.vot.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+    tbl = VOTables.read(votfile; unitful=true)
+    @test length(tbl) == 5
+    @test tbl.g_transit_time[1] isa Vector{Union{Missing, DateTime}}
+    @test tbl.g_transit_flux[1] isa Vector{typeof(1.0u"s^-1")}
+    @test length(tbl.g_transit_time[1]) == 50
+    @test length(tbl.g_transit_flux[1]) == 50
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles

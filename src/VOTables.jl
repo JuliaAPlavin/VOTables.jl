@@ -14,7 +14,7 @@ using DataPipes
 using AccessorsExtra
 using AstroAngles
 using Dates
-using DateFormats: yeardecimal
+using DateFormats: yeardecimal, julian_day
 
 export metadata, colmetadata
 
@@ -133,12 +133,12 @@ function postprocess_col(col, attrs; unitful::Bool)
     if "time.epoch" in ucds
         if eltype(col) <: AbstractString && unit == "'Y:M:D'"
             map(x -> parse(Date, x, dateformat"Y-m-d"), col)
-        elseif eltype(col) <: Real && unit == "d"
+        elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "d"
             @warn "assuming julian days" column=attrs[:name] unit first(col)
-            map(x -> isnan(x) ? missing : julian2datetime(x), col)
-        elseif eltype(col) <: Real && unit == "yr"
+           	julianday_numarr(col)
+        elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "yr"
             @warn "assuming years AD" column=attrs[:name] unit first(col)
-            map(x -> isnan(x) ? missing : yeardecimal(x), col)
+            yeardecimal_numarr(col)
         elseif isnothing(unit)
             try
                 map(x -> parse(Date, x, dateformat"Y-m-d"), col)
@@ -155,7 +155,7 @@ function postprocess_col(col, attrs; unitful::Bool)
     elseif "pos.eq.dec" in ucds && unit == "\"d:m:s\""
         dms2rad.(col)
     elseif unitful && !isnothing(unit)
-        if eltype(col) <: Union{Number,Missing,Nothing}
+        if eltype(col) <: Union{Number,AbstractArray{<:Number},Missing,Nothing}
             unit_vot_to_jl(col, unit)
         else
             @warn "column with a non-numeric eltype has a unit specified; ignoring the unit" column=attrs[:name] unit eltype(col) first(col)
@@ -165,6 +165,12 @@ function postprocess_col(col, attrs; unitful::Bool)
         col
     end
 end
+
+julianday_numarr(x::Number) = isnan(x) ? missing : julian_day(x)
+julianday_numarr(x::AbstractArray) = map(julianday_numarr, x)
+
+yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
+yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
 
 unit_vot_to_jl(_, _) = error("Load Unitful.jl to use units")
 
