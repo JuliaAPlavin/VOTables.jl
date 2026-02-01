@@ -2,7 +2,7 @@ module UnitfulExt
 
 using Unitful
 using VOTables.DataPipes
-import VOTables: unit_vot_to_jl, jl2votype, _unparse
+import VOTables: unit_vot_to_jl, unit_jl_to_vot, jl2votype, _unparse
 
 function unit_vot_to_jl(col, vot_unit::AbstractString)
     isempty(vot_unit) && return col
@@ -51,7 +51,21 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
     return postf.(col) .* u
 end
 
-jl2votype(::Type{QT}) where {T, QT <: Quantity{T}} = error("Writing unitful values not supported yet")
+function jl2votype(::Type{QT}) where {T, QT <: Quantity{T}}
+    inner = jl2votype(T)
+    u = unit_jl_to_vot(Unitful.unit(QT))
+    return (inner..., unit=u)
+end
+
+const SUPERSCRIPT_MAP = Dict('⁰'=>'0','¹'=>'1','²'=>'2','³'=>'3','⁴'=>'4','⁵'=>'5','⁶'=>'6','⁷'=>'7','⁸'=>'8','⁹'=>'9','⁻'=>'-')
+
+function unit_jl_to_vot(u::Unitful.Units)
+    s = string(u)
+    s = replace(s, "°" => "deg", "″" => "arcsec", "′" => "arcmin", "μm" => "um")
+    s = replace(s, r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+" => m -> join(SUPERSCRIPT_MAP[c] for c in m))
+    s = replace(s, " " => ".")
+    return s
+end
 _unparse(x::Quantity) = _unparse(ustrip(x))
 
 # XXX: piracy, need to upstream

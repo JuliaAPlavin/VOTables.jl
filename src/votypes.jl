@@ -50,6 +50,10 @@ function vo2jltype(attrs)
 end
 
 jl2votype(::Type{Union{Missing, T}}) where {T} = jl2votype(T)
+function jl2votype(::Type{<:AbstractVector{T}}) where {T}
+    inner = jl2votype(T)
+    return (inner..., arraysize="*")
+end
 jl2votype(::Type{String}) = (datatype="char", arraysize="*")
 jl2votype(::Type{Char}) = (datatype="char",)
 jl2votype(::Type{Bool}) = (datatype="boolean",)
@@ -111,4 +115,5 @@ end
 
 _unparse(::Missing) = ""
 _unparse(x::Complex) = "$(real(x)) $(imag(x))"
+_unparse(x::AbstractVector) = join(map(_unparse, x), " ")
 _unparse(x) = string(x)

@@ -292,7 +292,8 @@ end
         (a=[1,2,3], b=["xx", "y", "zzz"],),
         (a=[1.,3.,2.], b=["xx", "y", missing],),
         (bool=[false], u8=[UInt8(12)], ch=['a'], str=["xyz"], i16=[Int16(123)], i32=[Int32(123)], i64=[Int64(123)], f32=[Float32(1.23)], f64=[Float64(1.23)], f32c=[ComplexF32(1.23, 4.56)], f64c=[ComplexF64(1.23, 4.56)],),
-        # (a=[1u"m"], b=[1u"°"], c=[1u"arcsecond/m^2"]),
+        (vf64=[[1.0, 2.0], [3.0, 4.0, 5.0], [6.0]], vi32=[Int32[10, 20], Int32[30], Int32[40, 50, 60]], vbool=[[true, false], [true], [false, true, false]]),
+        (a=[1u"m"], b=[1u"°"], c=[1u"arcsecond/m^2"]),
     ]
         tbl_c = tbl |> Tables.columntable
         @testset for tbl_f in (identity, rowtable, StructArray, DictArray)

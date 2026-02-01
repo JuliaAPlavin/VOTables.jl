@@ -173,6 +173,7 @@ yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
 yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
 
 unit_vot_to_jl(_, _) = error("Load Unitful.jl to use units")
+unit_jl_to_vot(_) = error("Load Unitful.jl to use units")
 
 function _filltable!(cols, tblx)
     datax = @p tblx  _findall("ns:DATA", __, _namespaces(__))  only
