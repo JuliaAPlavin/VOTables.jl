@@ -330,6 +330,13 @@ end
         end
     end
 
+    @testset "pure-missing column" begin
+        tbl = (a=[missing, missing, missing],)
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f) |> Tables.columntable
+        @test all(ismissing, read_c.a)
+    end
+
     using Dates
     @testset "Date/DateTime" begin
         tbl = (d=[Date(2020, 1, 15), Date(2021, 6, 30)], dt=[DateTime(2020, 1, 15, 12, 30), DateTime(2021, 6, 30, 0, 0)])

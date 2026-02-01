@@ -49,6 +49,7 @@ function vo2jltype(attrs)
     end
 end
 
+jl2votype(::Type{Missing}) = jl2votype(String)
 jl2votype(::Type{Union{Missing, T}}) where {T} = jl2votype(T)
 function jl2votype(::Type{<:AbstractVector{T}}) where {T}
     inner = jl2votype(T)
