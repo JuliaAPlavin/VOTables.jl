@@ -351,6 +351,87 @@ end
         tbl |> VOTables.write(f)
         read_c = VOTables.read(f) |> Tables.columntable
         @test all(ismissing, read_c.a)
+        @test_broken eltype(read_c.a) === Missing
+    end
+
+    @testset "pure-missing empty column" begin
+        tbl = (a=Missing[],)
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f) |> Tables.columntable
+        @test isempty(read_c.a)
+        @test_broken eltype(read_c.a) === Missing
+    end
+
+    @testset "Union{Missing, Float64} column" begin
+        @testset "all missing" begin
+            tbl = (a=Union{Missing, Float64}[missing, missing, missing],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test all(ismissing, read_c.a)
+            @test eltype(read_c.a) === Union{Missing, Float64}
+        end
+        @testset "all present" begin
+            tbl = (a=Union{Missing, Float64}[1.0, 2.0, 3.0],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test read_c.a == [1.0, 2.0, 3.0]
+            @test eltype(read_c.a) === Float64
+        end
+        @testset "empty" begin
+            tbl = (a=Union{Missing, Float64}[],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test isempty(read_c.a)
+            @test_broken eltype(read_c.a) === Union{Missing, Float64}
+        end
+    end
+
+    @testset "Union{Missing, unitful} column" begin
+        @testset "all missing" begin
+            tbl = (a=Union{Missing, typeof(1.0u"m")}[missing, missing],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test all(ismissing, read_c.a)
+            @test eltype(read_c.a) === Union{Missing, typeof(1.0u"m")}
+        end
+        @testset "all present" begin
+            tbl = (a=Union{Missing, typeof(1.0u"m")}[1.0u"m", 2.0u"m"],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test read_c.a == [1.0u"m", 2.0u"m"]
+            @test eltype(read_c.a) === typeof(1.0u"m")
+        end
+        @testset "empty" begin
+            tbl = (a=Union{Missing, typeof(1.0u"m")}[],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f; unitful=true) |> Tables.columntable
+            @test isempty(read_c.a)
+            @test_broken eltype(read_c.a) === Union{Missing, typeof(1.0u"m")}
+        end
+    end
+
+    @testset "Union{Missing, Vector{Float64}} column" begin
+        @testset "all missing" begin
+            tbl = (a=Union{Missing, Vector{Float64}}[missing, missing],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f) |> Tables.columntable
+            @test all(ismissing, read_c.a)
+            @test eltype(read_c.a) === Union{Missing, Vector{Float64}}
+        end
+        @testset "all present" begin
+            tbl = (a=Union{Missing, Vector{Float64}}[[1.0, 2.0], [3.0, 4.0, 5.0]],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f) |> Tables.columntable
+            @test read_c.a == [[1.0, 2.0], [3.0, 4.0, 5.0]]
+            @test eltype(read_c.a) === Vector{Float64}
+        end
+        @testset "empty" begin
+            tbl = (a=Union{Missing, Vector{Float64}}[],)
+            tbl |> VOTables.write(f)
+            read_c = VOTables.read(f) |> Tables.columntable
+            @test isempty(read_c.a)
+            @test_broken eltype(read_c.a) === Union{Missing, Vector{Float64}}
+        end
     end
 
     using Dates

@@ -51,7 +51,16 @@ function unit_vot_to_jl(col, vot_unit::AbstractString)
         end
         return col
     end
-    return postf.(col) .* u
+    result = postf.(col) .* u
+    # broadcasting all-missing columns loses the numeric type (Missing .* u"m" → Vector{Missing}), fix it
+    if Missing <: eltype(col)
+        @assert eltype(col) !== Missing
+        NMT = nonmissingtype(eltype(col))
+        sample_val = NMT <: AbstractArray ? [one(eltype(NMT))] : one(NMT)
+        QT = typeof(postf(sample_val) * u)
+        result = convert(Vector{Union{Missing, QT}}, result)
+    end
+    return result
 end
 
 function jl2votype(::Type{QT}) where {T, QT <: Quantity{T}}
