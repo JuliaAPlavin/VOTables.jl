@@ -26,6 +26,9 @@ using TestItemRunner
     @test unit_vot_to_jl([1.0], "[W/um]") |> only === 10.0u"W*μm^-1"
     @test unit_vot_to_jl([1.0], "angstrom") |> only === 1.0u"Å"
     @test unit_vot_to_jl([1.0], "Angstrom") |> only === 1.0u"Å"
+    @test unit_vot_to_jl([1.0], "solRad") |> only === 1.0u"Rsun"
+    @test unit_vot_to_jl([1.0], "solLum") |> only === 1.0u"Lsun"
+    @test unit_vot_to_jl([1.0], "solMass") |> only === 1.0u"Msun"
     @test unit_vot_to_jl([1.0], "") |> only === 1.0
 end
 
