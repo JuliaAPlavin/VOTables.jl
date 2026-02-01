@@ -1,0 +1,25 @@
+<?xml version='1.0'?>
+<VOTABLE version="1.4"
+ xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<!--
+ !  VOTable written by STIL version 4.3-4 (uk.ac.starlink.votable.VOTableWriter)
+ !  at 2026-02-26T16:06:51
+ !-->
+<RESOURCE>
+<TABLE name="complex-tabledata.vot" nrows="3">
+<FIELD datatype="float" name="s_float"/>
+<FIELD datatype="double" name="s_double"/>
+<FIELD datatype="floatComplex" name="s_floatComplex"/>
+<FIELD datatype="doubleComplex" name="s_doubleComplex"/>
+<DATA>
+<BINARY>
+<STREAM encoding='base64'>
+P8AAAEAEAAAAAAAAP8AAAEAgAABADAAAAAAAAEASAAAAAAAAv4AAAMAAAAAAAAAA
+v4AAAD8AAAA/0AAAAAAAAL/oAAAAAAAAAAAAAEBZAAAAAAAAAAAAAAAAAABAWQAA
+AAAAAMBZAAAAAAAA
+</STREAM>
+</BINARY>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>

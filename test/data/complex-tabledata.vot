@@ -1,0 +1,34 @@
+<?xml version='1.0'?>
+<VOTABLE version="1.4"
+ xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE>
+<TABLE nrows="3">
+<FIELD datatype="float" name="s_float"/>
+<FIELD datatype="double" name="s_double"/>
+<FIELD datatype="floatComplex" name="s_floatComplex"/>
+<FIELD datatype="doubleComplex" name="s_doubleComplex"/>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>1.5</TD>
+    <TD>2.5</TD>
+    <TD>1.5 2.5</TD>
+    <TD>3.5 4.5</TD>
+  </TR>
+  <TR>
+    <TD>-1.0</TD>
+    <TD>-2.0</TD>
+    <TD>-1.0 0.5</TD>
+    <TD>0.25 -0.75</TD>
+  </TR>
+  <TR>
+    <TD>0.0</TD>
+    <TD>100.0</TD>
+    <TD>0.0 0.0</TD>
+    <TD>100.0 -100.0</TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>
