@@ -34,15 +34,16 @@ function nodecontent_sv(f, ptr::Ptr{EzXML._Node})
     return res
 end
 
-eachelementptr(node::EzXML.Node, backward::Bool=false) = ChildElementPtrIterator(node, backward)
+eachelementptr(node::EzXML.Node, backward::Bool=false) = ChildElementPtrIterator(node.ptr, backward)
+eachelementptr(ptr::Ptr{EzXML._Node}, backward::Bool=false) = ChildElementPtrIterator(ptr, backward)
 
 struct ChildElementPtrIterator
-    node::EzXML.Node
+    ptr::Ptr{EzXML._Node}
     backward::Bool
 end
 
 function Base.iterate(iter::ChildElementPtrIterator)
-    cur_ptr = iter.backward ? EzXML.last_element_ptr(iter.node.ptr) : EzXML.first_element_ptr(iter.node.ptr)
+    cur_ptr = iter.backward ? EzXML.last_element_ptr(iter.ptr) : EzXML.first_element_ptr(iter.ptr)
     cur_ptr == C_NULL && return nothing
     return cur_ptr, cur_ptr
 end

@@ -261,17 +261,16 @@ function _filltable!(cols, tblx, ::Val{:BINARY})
 end
 
 function _filltable!(cols, tblx, ::Val{:TABLEDATA})
-    trs = @p let
+    tabledatax = @p let
         tblx
         @aside ns = _namespaces(__)
         _findall("ns:DATA/ns:TABLEDATA", __, ns)
         only
-        _findall("ns:TR", __, ns)
     end
     for col in cols
-        sizehint!(col, length(trs))
+        sizehint!(col, EzXML.countelements(tabledatax))
     end
-    foreach(trs) do tr
+    for tr in eachelementptr(tabledatax)
         for (col, td) in zip(cols, eachelementptr(tr))
             @assert nodename_sv(td) == "TD"
             @multiifs(
