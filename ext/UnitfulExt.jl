@@ -57,9 +57,15 @@ function jl2votype(::Type{QT}) where {T, QT <: Quantity{T}}
     return (inner..., unit=u)
 end
 
+function jl2votype(::Type{GT}) where {T, GT <: Unitful.Gain{<:Any, <:Any, T}}
+    inner = jl2votype(T)
+    u = unit_jl_to_vot(Unitful.logunit(GT))
+    return (inner..., unit=u)
+end
+
 const SUPERSCRIPT_MAP = Dict('⁰'=>'0','¹'=>'1','²'=>'2','³'=>'3','⁴'=>'4','⁵'=>'5','⁶'=>'6','⁷'=>'7','⁸'=>'8','⁹'=>'9','⁻'=>'-')
 
-function unit_jl_to_vot(u::Unitful.Units)
+function unit_jl_to_vot(u::Union{Unitful.Units, Unitful.MixedUnits})
     s = string(u)
     s = replace(s, "°" => "deg", "″" => "arcsec", "′" => "arcmin", "μm" => "um")
     s = replace(s, r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+" => m -> join(SUPERSCRIPT_MAP[c] for c in m))
@@ -67,6 +73,7 @@ function unit_jl_to_vot(u::Unitful.Units)
     return s
 end
 _unparse(x::Quantity) = _unparse(ustrip(x))
+_unparse(x::Unitful.Gain) = _unparse(ustrip(x))
 
 # XXX: piracy, need to upstream
 Base.:*(::Missing, ::Unitful.MixedUnits) = missing
