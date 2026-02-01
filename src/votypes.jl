@@ -57,6 +57,8 @@ end
 jl2votype(::Type{String}) = (datatype="char", arraysize="*")
 jl2votype(::Type{Char}) = (datatype="char",)
 jl2votype(::Type{Bool}) = (datatype="boolean",)
+jl2votype(::Type{Date}) = (datatype="double", unit="yr", ucd="time.epoch")
+jl2votype(::Type{DateTime}) = (datatype="double", unit="yr", ucd="time.epoch")
 function jl2votype(T::Type)
     votypes = findall(==(T), TYPE_VO_TO_JL)
     isempty(votypes) && error("Don't know how to convert Julia type $T to a VOTable type")
@@ -114,6 +116,7 @@ function _parse_binary(::Type{Vector{T}}, data) where {T}
 end
 
 _unparse(::Missing) = ""
+_unparse(x::Union{Date,DateTime}) = _unparse(yeardecimal(x))
 _unparse(x::Complex) = "$(real(x)) $(imag(x))"
 _unparse(x::AbstractVector) = join(map(_unparse, x), " ")
 _unparse(x) = string(x)

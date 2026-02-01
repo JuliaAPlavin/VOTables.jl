@@ -313,6 +313,15 @@ end
             end
         end
     end
+
+    using Dates
+    @testset "Date/DateTime" begin
+        tbl = (d=[Date(2020, 1, 15), Date(2021, 6, 30)], dt=[DateTime(2020, 1, 15, 12, 30), DateTime(2021, 6, 30, 0, 0)])
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f) |> Tables.columntable
+        @test read_c.d == DateTime.(tbl.d)
+        @test read_c.dt == tbl.dt
+    end
 end
 
 @testitem "_" begin
