@@ -15,6 +15,7 @@ using AccessorsExtra
 using AstroAngles
 using Dates
 using DateFormats: yeardecimal, julian_day
+using Logging
 
 export metadata, colmetadata
 
@@ -25,12 +26,13 @@ include("metadata_piracy.jl")
 include("votypes.jl")
 
 
-"""    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=false])
+"""    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=false], [quiet=false])
 
 Read a VOTable from a file or another `IO` object. By default, the result is a `StructArray`: a Julian collection and table. Alternatively, specify `result_type=StructArray`.
 
 - `postprocess=true`: do further processing of values, other than parsing formal VOTable datatypes. Includes parsing dates and times, and converting units to `Unitful.jl`; set to `false` to disable all of this.
 - `unitful=false`: parse units from VOTable metadata to `Unitful.jl` units. Uses units from all loaded `Unitful`-compatible packages, ignores unknown units and shows warnings for them. Requires `postprocess=true`.
+- `quiet=false`: silence all warnings and informational messages emitted during parsing.
 """
 function read end
 
@@ -53,29 +55,31 @@ end
 
 read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
-function read(result_type, votfile; postprocess=true, unitful=false, strict=true)
-    tblx = tblxml(votfile; strict)
-    colmetas = get_colmetas(tblx)
-    colnames = @p colmetas map(Symbol(_.attrs[:name]))
-    colarrays = @p colmetas map(Union{_.jltype, Missing}[])
-    @p let
-        colarrays
-        _filltable!(__, tblx)
-        @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
-        postprocess ? modify(__, ∗, colmetas) do col, (;attrs)
-            postprocess_col(col, attrs; unitful)
-        end : __
-        modify(__, ∗, colmetas) do col, (;attrs)
-            MetadataArray(
-                col,
-                _filter(!isnothing, (
-                    description=get(attrs, :description, nothing),
-                    ucd=get(attrs, :ucd, nothing),
-                    unit_vot=get(attrs, :unit, nothing)
-                )),
-            )
+function read(result_type, votfile; postprocess=true, unitful=false, strict=true, quiet=false)
+    with_logger(quiet ? NullLogger() : current_logger()) do
+        tblx = tblxml(votfile; strict)
+        colmetas = get_colmetas(tblx)
+        colnames = @p colmetas map(Symbol(_.attrs[:name]))
+        colarrays = @p colmetas map(Union{_.jltype, Missing}[])
+        @p let
+            colarrays
+            _filltable!(__, tblx)
+            @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
+            postprocess ? modify(__, ∗, colmetas) do col, (;attrs)
+                postprocess_col(col, attrs; unitful)
+            end : __
+            modify(__, ∗, colmetas) do col, (;attrs)
+                MetadataArray(
+                    col,
+                    _filter(!isnothing, (
+                        description=get(attrs, :description, nothing),
+                        ucd=get(attrs, :ucd, nothing),
+                        unit_vot=get(attrs, :unit, nothing)
+                    )),
+                )
+            end
+            _container_from_components(result_type, colnames .=> __)
         end
-        _container_from_components(result_type, colnames .=> __)
     end
 end
 

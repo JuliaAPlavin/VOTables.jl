@@ -236,6 +236,19 @@ end
     @test length(tbl.g_transit_flux[1]) == 50
 end
 
+@testitem "quiet option" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+
+    votgzfile = joinpath(@__DIR__, "data/votable_compressed.gz")
+    votfile = tempname()
+    run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
+
+    # without quiet: info/warn messages are emitted (e.g. "assuming the decimal logarithm" for log(K) units)
+    @test_logs (:info,) match_mode=:any VOTables.read(votfile; unitful=true)
+    # with quiet=true: no messages
+    @test_logs VOTables.read(votfile; unitful=true, quiet=true)
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles
