@@ -92,12 +92,12 @@ function _parse(::Type{Bool}, s)
 end
 
 function _parse(::Type{T}, s) where {T <: Complex}
-    re, im, rest... = split(s)
-    @assert isempty(rest)
-    complex(_parse(real(T), re), _parse(real(T), im))
+    i = findfirst(' ', s)
+    isnothing(i) && error("Expected space-separated real and imaginary parts in '$s'")
+    complex(_parse(real(T), @view s[1:prevind(s, i)]), _parse(real(T), @view s[nextind(s, i):end]))
 end
 
-_parse(::Type{Vector{T}}, s) where {T} = map(x -> _parse(T, x), split(s))
+_parse(::Type{Vector{T}}, s) where {T} = map(x -> _parse(T, x), eachsplit(s))
 
 
 _parse_binary(::Type{String}, data) = String(copy(data))
