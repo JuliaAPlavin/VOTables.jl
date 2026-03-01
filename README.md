@@ -4,7 +4,7 @@ Support for the VOTable format (Virtual Observatory Table, [defined](https://www
 
 Supports:
 - ✅ Read VOTable files, both XML (`TABLEDATA`) and binary (`BINARY`, `BINARY2`) formats
-- ✅ Parse numbers, strings, datetimes (optional), units (optional, uses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl))
+- ✅ Parse numbers, strings, datetimes (optional), units (uses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl))
 - ✅ Extract column descriptions from VOTable files into Julia table metadata
 - ✅ Write VOTable files
 

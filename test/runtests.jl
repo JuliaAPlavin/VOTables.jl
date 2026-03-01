@@ -4,6 +4,7 @@ using TestItemRunner
 
 
 @testitem "unit parsing" begin
+    # tested extensively in AstroUnitFormats, here just in case...
     using VOTables: unit_vot_to_jl
     using Unitful, UnitfulAngles, UnitfulAstro
 
@@ -41,7 +42,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 100
     @test tbl.recno::AbstractVector{Int32} == 1:100
     @test eltype(tbl.Tb) == Float32
@@ -50,15 +51,15 @@ end
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === 11.682f0
     @test tbl.ID[1:20:100] == ["0003+380", "0003-066", "0006+061", "0007+106", "0011+189"]
-    
+
     # @test metadata(tbl) == (description=...,)
     @test metadata(tbl.Epoch) == (description = "Epoch", ucd = "time.epoch", unit_vot = "'Y:M:D'")
     @test colmetadata(tbl, :Epoch) == metadata(tbl.Epoch)
     @test colmetadata(tbl, :ID) == (description = "Source name in truncated B1950.0 coordinates", ucd = "meta.id;meta.main")
     @test colmetadata(tbl)[:Epoch] == colmetadata(tbl, :Epoch)
 
-    @test isequal(Tables.columns(VOTables.read(DictArray, votfile)), Tables.columns(DictArray(tbl)))
-    @test isequal(Tables.columns(VOTables.read(StructArray, votfile)), Tables.columns(tbl))
+    @test isequal(Tables.columns(VOTables.read(DictArray, votfile; unitful=false)), Tables.columns(DictArray(tbl)))
+    @test isequal(Tables.columns(VOTables.read(StructArray, votfile; unitful=false)), Tables.columns(tbl))
 
     using Unitful
     tbl = VOTables.read(votfile; unitful=true)
@@ -82,7 +83,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 18
     @test tbl._key::AbstractVector{Int16} == [1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5]
     @test tbl[1].var"BP-RP" === 1.127016f0
@@ -103,7 +104,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 5
     @test tbl[1].errPA == 76
     @test tbl[1].JD == DateTime(1998, 9, 28, 7, 20, 55, 680)
@@ -122,7 +123,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 88
     @test tbl[1].Freq === "8"
     @test tbl[1].PA === Int16(-105)
@@ -140,7 +141,7 @@ end
     # time is of "double" type, but Y:M:D format is given
     votfile = joinpath(@__DIR__, "data/weird_mix")
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 1
     @test tbl.recno::AbstractVector{Int32} == [10]
     @test tbl[1].Epoch == 2.456516e6
@@ -158,7 +159,7 @@ end
 
     votfile = joinpath(@__DIR__, "data/gaia")
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 5
     @test tbl[1].dec_error == 0.10277003f0
 
@@ -175,7 +176,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 629
     @test tbl[1].DataFluxValue == 1.07e-15
 
@@ -192,7 +193,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile)
+    tbl = VOTables.read(votfile; unitful=false)
     @test length(tbl) == 5
     @test tbl[1].energy_bounds_samples == [2e-7, 1.1e-6]
     @test tbl[1].obsID == "00000000-0000-0000-b65e-840e6d24aa6d"
@@ -246,8 +247,6 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    # without quiet: info/warn messages are emitted (e.g. "assuming the decimal logarithm" for log(K) units)
-    @test_logs (:info,) match_mode=:any VOTables.read(votfile; unitful=true)
     # with quiet=true: no messages
     @test_logs VOTables.read(votfile; unitful=true, quiet=true)
 end
