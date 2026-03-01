@@ -7,7 +7,7 @@ Supports:
   - ✅ XML (`TABLEDATA`) and binary (`BINARY`, `BINARY2`) formats
   - 🚧 `FITS` format in VOTable
 - 🚧 Multiple tables in a single file
-- ✅ Decompressing on the fly: pass a `DecompressorStream` from [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl)
+- ✅ (De)compressing on the fly: pass a `(De)compressorStream` from [TranscodingStreams.jl](https://github.com/JuliaIO/TranscodingStreams.jl)
 - ✅ Parse numbers, strings, datetimes, units (uses [VOUnits.jl](https://github.com/JuliaAPlavin/VOUnits.jl) and [Unitful.jl](https://github.com/PainterQubits/Unitful.jl))
 - ✅ Extract column descriptions from VOTable files into Julia array metadata
 - ✅ Write VOTable files
