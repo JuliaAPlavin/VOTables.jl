@@ -189,11 +189,11 @@ function postprocess_col(col, attrs; unitful::Bool, timeorigin::Real=0)
     ucds = split(get(attrs, :ucd, ""), ";")
     unit = get(attrs, :unit, nothing)
     if "time.epoch" in ucds
-        if eltype(col) <: AbstractString && unit == "'Y:M:D'"
-            map(x -> parse(Date, x, dateformat"Y-m-d"), col)
-        elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "d"
+        if nonmissingtype(eltype(col)) <: AbstractString && unit == "'Y:M:D'"
+            map(x -> ismissing(x) ? missing : parse(Date, x, dateformat"Y-m-d"), col)
+        elseif nonmissingtype(eltype(col)) <: Union{Real,AbstractArray{<:Real}} && unit == "d"
            	julianday_numarr(col, timeorigin)
-        elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "yr"
+        elseif nonmissingtype(eltype(col)) <: Union{Real,AbstractArray{<:Real}} && unit == "yr"
             @warn "assuming years AD" column=attrs[:name] unit first(col)
             yeardecimal_numarr(col)
         elseif isnothing(unit)
@@ -223,9 +223,11 @@ function postprocess_col(col, attrs; unitful::Bool, timeorigin::Real=0)
     end
 end
 
+julianday_numarr(x::Missing, timeorigin) = missing
 julianday_numarr(x::Number, timeorigin) = isnan(x) ? missing : julian_day(x + timeorigin)
 julianday_numarr(x::AbstractArray, timeorigin) = map(v -> julianday_numarr(v, timeorigin), x)
 
+yeardecimal_numarr(x::Missing) = missing
 yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
 yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
 

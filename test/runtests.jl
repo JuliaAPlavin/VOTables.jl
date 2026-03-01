@@ -471,12 +471,36 @@ end
     end
 
     using Dates
-    @testset "Date/DateTime" begin
-        tbl = (d=[Date(2020, 1, 15), Date(2021, 6, 30)], dt=[DateTime(2020, 1, 15, 12, 30), DateTime(2021, 6, 30, 0, 0)])
+    @testset "Date roundtrip" begin
+        tbl = (d=[Date(2020, 1, 15), Date(2021, 6, 30)],)
         tbl |> VOTables.write(f)
-        read_c = VOTables.read(f) |> Tables.columntable
+        read_c = VOTables.read(f; quiet=true) |> Tables.columntable
         @test read_c.d == DateTime.(tbl.d)
+        @test eltype(read_c.d) == DateTime
+    end
+
+    @testset "DateTime roundtrip" begin
+        tbl = (dt=[DateTime(2020, 1, 15, 12, 30, 45), DateTime(2021, 6, 30, 0, 0)],)
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f; quiet=true) |> Tables.columntable
         @test read_c.dt == tbl.dt
+        @test eltype(read_c.dt) == DateTime
+    end
+
+    @testset "Union{Missing, Date} roundtrip" begin
+        tbl = (d=[Date(2020, 1, 15), missing, Date(2021, 6, 30)],)
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f; quiet=true) |> Tables.columntable
+        @test isequal(read_c.d, [DateTime(2020, 1, 15), missing, DateTime(2021, 6, 30)])
+        @test eltype(read_c.d) == Union{Missing, DateTime}
+    end
+
+    @testset "Union{Missing, DateTime} roundtrip" begin
+        tbl = (dt=[DateTime(2020, 1, 15, 12, 30, 45), missing, DateTime(2021, 6, 30)],)
+        tbl |> VOTables.write(f)
+        read_c = VOTables.read(f; quiet=true) |> Tables.columntable
+        @test isequal(read_c.dt, [DateTime(2020, 1, 15, 12, 30, 45), missing, DateTime(2021, 6, 30)])
+        @test eltype(read_c.dt) == Union{Missing, DateTime}
     end
 end
 
