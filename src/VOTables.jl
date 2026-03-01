@@ -17,7 +17,7 @@ using Dates
 using DateFormats: yeardecimal, julian_day
 using Logging
 using Unitful: Unitful, Quantity, ustrip, NoUnits
-using AstroUnitFormats: parse_unit, unit_string, VOUnit
+using VOUnits: parse_unit, unit_string
 
 export metadata, colmetadata
 
@@ -179,7 +179,7 @@ yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
 yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
 
 function unit_vot_to_jl(col, vot_unit::AbstractString)
-    (;unit, valuefn) = parse_unit(vot_unit, VOUnit())
+    (;unit, valuefn) = parse_unit(vot_unit)
     unit === NoUnits && return col
     result = valuefn.(col) .* unit
     # broadcasting all-missing columns loses the numeric type (Missing .* u"m" → Vector{Missing}), fix it
