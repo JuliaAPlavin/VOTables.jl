@@ -1,5 +1,6 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 CompatHelperLocal = "5224ae11-6099-4aaa-941d-3aab004bd678"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DictArrays = "e9958f2c-b184-4647-9c5a-224a61f6a14b"
