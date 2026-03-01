@@ -297,6 +297,10 @@ end
     @test_throws "Maximum execution time" VOTables.read(joinpath(@__DIR__, "data/tap_results_and_error"))
     tbl = @test_warn "Maximum execution time" VOTables.read(joinpath(@__DIR__, "data/tap_results_and_error"); strict=false)
     @test length(tbl) == 5
+
+    @test_throws "truncated result" VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"))
+    tbl = @test_warn "truncated result" VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"); strict=false)
+    @test length(tbl) > 0
 end
 
 @testitem "read formats consistency" begin
