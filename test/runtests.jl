@@ -446,6 +446,133 @@ end
     end
 end
 
+@testitem "astropy: valid_votable" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/valid_votable.xml"))
+    @test length(tbl) == 3
+    @test propertynames(tbl) == (:RA, :Dec, :Name, :RVel, :e_RVel, :R)
+    @test tbl[1].RA == 10.68f0u"°"
+    @test tbl[1].Dec == 41.27f0u"°"
+    @test tbl[1].Name == "N 224"
+    @test tbl[1].RVel == -297u"km*s^-1"
+    @test tbl[1].R == 0.7f0u"Mpc"
+    @test tbl[3].Name == "N 598"
+end
+
+@testitem "astropy: coosys" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/coosys.xml"))
+    @test length(tbl) == 1
+    @test propertynames(tbl) == (:RA, :Dec, :OtherDec, :Name)
+    @test tbl[1].RA == 10.68u"°"
+    @test tbl[1].Dec == 41.27u"°"
+    @test tbl[1].OtherDec == 12.34u"°"
+    @test tbl[1].Name == "N 224"
+end
+
+@testitem "astropy: timesys" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/timesys.xml"))
+    @test length(tbl) == 1
+    @test propertynames(tbl) == (:obs_time, :flux, :mag, :flux_error)
+    @test tbl[1].flux == 168.358f0u"s^-1"
+    @test tbl[1].flux_error == 8.71437f0u"s^-1"
+end
+
+@testitem "astropy: gemini" begin
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/gemini.xml"))
+    @test length(tbl) == 4
+    @test length(propertynames(tbl)) == 10
+    @test tbl[1].content_type == "application/fits"
+    @test tbl[1].content_length == 7068398
+    @test tbl[1].product_type == "science"
+    @test ismissing(tbl[2].content_length)
+end
+
+@testitem "astropy: binary2_masked_strings" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/binary2_masked_strings.xml"))
+    @test length(tbl) == 3
+    @test length(propertynames(tbl)) == 6
+    @test tbl[1].source_id == 5966029325870896512
+    @test tbl[1].ra ≈ 257.32936063024u"°"
+    @test ismissing(tbl[1].a_g_val)
+end
+
+@testitem "astropy: binary2_variable_length_char" begin
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/binary2_variable_length_char.xml"))
+    @test length(tbl) == 1
+    @test tbl[1].access_format == "application/x-votable+xml;content=datalink"
+end
+
+@testitem "astropy: vizier_b2" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"))
+    @test length(tbl) == 20
+    @test length(propertynames(tbl)) == 12
+    @test tbl[1].MajDiam == 100.0f0u"arcsecond"
+    @test tbl[1].MinDiam == 100.0f0u"arcsecond"
+end
+
+@testitem "astropy: irsa-nph-m31" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/irsa-nph-m31.xml"); quiet=true)
+    @test length(tbl) == 18
+    @test length(propertynames(tbl)) == 25
+    @test tbl[1].ra == 10.683263f0u"°"
+    @test tbl[1].dec == 41.267456f0u"°"
+    @test tbl[1].designation == "00424398+4116028"
+    @test tbl[3].err_maj == 0.08u"arcsecond"
+end
+
+@testitem "astropy: names" begin
+    using Unitful, UnitfulAstro, UnitfulAngles
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/names.xml"); quiet=true)
+    @test length(tbl) >= 1
+    @test tbl[1].Name == "SSTGLMC G000.0000+00.1611"
+    @test tbl[1].GLON == 0.0f0u"°"
+end
+
+@testitem "astropy: empty_table" begin
+    # no FIELD definitions, empty rows
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/empty_table.xml")); true)
+end
+
+@testitem "astropy: no_resource" begin
+    # minimal VOTable with no RESOURCE element
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/no_resource.xml")); true)
+end
+
+@testitem "astropy: no_field_not_empty_table" begin
+    # no fields but has TR elements
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/no_field_not_empty_table.xml")); true)
+end
+
+@testitem "astropy: nonstandard_units" begin
+    # non-standard unit strings, no data rows
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/nonstandard_units.xml")); true)
+end
+
+@testitem "astropy: irsa-nph-error" begin
+    # error-only VOTable (no tables)
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/irsa-nph-error.xml")); true)
+end
+
+@testitem "astropy: regression" begin
+    # uses unsupported "unicodeString" datatype
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/regression.xml"); quiet=true); true)
+end
+
+@testitem "astropy: regression truth 1.1" begin
+    # complex number parsing issue
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/regression.bin.tabledata.truth.1.1.xml"); quiet=true); true)
+end
+
+@testitem "astropy: regression truth 1.3" begin
+    # complex number parsing issue
+    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/regression.bin.tabledata.truth.1.3.xml"); quiet=true); true)
+end
+
 @testitem "_" begin
     import Aqua
     Aqua.test_all(VOTables; ambiguities=false, unbound_args=false, piracies=false)
