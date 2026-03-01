@@ -55,11 +55,41 @@ end
 # support Cols()?
 # support <COOSYS> tag
 
+function _parse_timeorigin(s::AbstractString)
+    s == "MJD-origin" && return 2400000.5
+    s == "JD-origin" && return 0.0
+    return parse(Float64, s)
+end
+
+function _parse_timesys(resource_node)
+    ns = _namespaces(resource_node)
+    nodes = _findall("ns:TIMESYS", resource_node, ns)
+    dictionary(map(nodes) do node
+        id = node["ID"]
+        timeorigin = haskey(node, "timeorigin") ? _parse_timeorigin(node["timeorigin"]) : 0.0
+        id => timeorigin
+    end)
+end
+
+function _resolve_timeorigin(attrs, timesys)
+    ref = get(attrs, :ref, nothing)
+    if !isnothing(ref) && haskey(timesys, ref)
+        return timesys[ref]
+    elseif length(timesys) == 1
+        # ref must be specified, but in practice many files omit it
+        # so, if there's only one TIMESYS, assume it's the one
+        return only(values(timesys))
+    else
+        return 0.0
+    end
+end
+
 read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
 function read(result_type, votfile; postprocess=true, unitful=true, strict=true, quiet=false)
     with_logger(quiet ? NullLogger() : current_logger()) do
         tblx = tblxml(votfile; strict)
+        timesys = _parse_timesys(parentnode(tblx))
         colmetas = get_colmetas(tblx)
         colnames = @p colmetas map(Symbol(_.attrs[:name]))
         colarrays = @p colmetas map(Union{_.jltype, Missing}[])
@@ -68,7 +98,8 @@ function read(result_type, votfile; postprocess=true, unitful=true, strict=true,
             _filltable!(__, tblx)
             @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
             postprocess ? modify(__, ∗, colmetas) do col, (;attrs)
-                postprocess_col(col, attrs; unitful)
+                timeorigin = _resolve_timeorigin(attrs, timesys)
+                postprocess_col(col, attrs; unitful, timeorigin)
             end : __
             modify(__, ∗, colmetas) do col, (;attrs)
                 MetadataArray(
@@ -133,15 +164,14 @@ function _container_from_components(::Type{StructArray}, pairs)
     NamedTuple{Tuple(keys)}(Tuple(vals)) |> StructArray
 end
 
-function postprocess_col(col, attrs; unitful::Bool)
+function postprocess_col(col, attrs; unitful::Bool, timeorigin::Real=0)
     ucds = split(get(attrs, :ucd, ""), ";")
     unit = get(attrs, :unit, nothing)
     if "time.epoch" in ucds
         if eltype(col) <: AbstractString && unit == "'Y:M:D'"
             map(x -> parse(Date, x, dateformat"Y-m-d"), col)
         elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "d"
-            @warn "assuming julian days" column=attrs[:name] unit first(col)
-           	julianday_numarr(col)
+           	julianday_numarr(col, timeorigin)
         elseif eltype(col) <: Union{Real,AbstractArray{<:Real}} && unit == "yr"
             @warn "assuming years AD" column=attrs[:name] unit first(col)
             yeardecimal_numarr(col)
@@ -172,8 +202,8 @@ function postprocess_col(col, attrs; unitful::Bool)
     end
 end
 
-julianday_numarr(x::Number) = isnan(x) ? missing : julian_day(x)
-julianday_numarr(x::AbstractArray) = map(julianday_numarr, x)
+julianday_numarr(x::Number, timeorigin) = isnan(x) ? missing : julian_day(x + timeorigin)
+julianday_numarr(x::AbstractArray, timeorigin) = map(v -> julianday_numarr(v, timeorigin), x)
 
 yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
 yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
