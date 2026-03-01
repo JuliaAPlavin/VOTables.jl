@@ -70,3 +70,16 @@ function EzXML.parsexml(io::IO)
         @p StringView(Base.read(path)) |> parsexml
     end
 end
+
+# StreamReader zero-copy helpers using libxml2's const-pointer APIs (no allocation/free per call)
+function nodename_sv_reader(reader::EzXML.StreamReader)
+    ptr = ccall((:xmlTextReaderConstName, EzXML.libxml2), Cstring, (Ptr{Cvoid},), reader)
+    ptr == C_NULL && return nothing
+    unsafe_wrap(StringView, ptr)
+end
+
+function nodevalue_sv_reader(reader::EzXML.StreamReader)
+    ptr = ccall((:xmlTextReaderConstValue, EzXML.libxml2), Cstring, (Ptr{Cvoid},), reader)
+    ptr == C_NULL && return nothing
+    unsafe_wrap(StringView, ptr)
+end
