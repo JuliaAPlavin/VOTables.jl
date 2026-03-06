@@ -16,6 +16,8 @@ using AstroAngles
 using Dates
 using DateFormats: yeardecimal, julian_day
 using Logging
+using Unitful: Unitful, Quantity, ustrip, NoUnits
+using AstroUnitFormats: parse_unit, unit_string, VOUnit
 
 export metadata, colmetadata
 
@@ -26,12 +28,12 @@ include("metadata_piracy.jl")
 include("votypes.jl")
 
 
-"""    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=false], [quiet=false])
+"""    VOTables.read([result_type=StructArray], votfile; [postprocess=true], [unitful=true], [quiet=false])
 
 Read a VOTable from a file or another `IO` object. By default, the result is a `StructArray`: a Julian collection and table. Alternatively, specify `result_type=StructArray`.
 
 - `postprocess=true`: do further processing of values, other than parsing formal VOTable datatypes. Includes parsing dates and times, and converting units to `Unitful.jl`; set to `false` to disable all of this.
-- `unitful=false`: parse units from VOTable metadata to `Unitful.jl` units. Uses units from all loaded `Unitful`-compatible packages, ignores unknown units and shows warnings for them. Requires `postprocess=true`.
+- `unitful=true`: parse units from VOTable metadata to `Unitful.jl` units. Ignores unknown units and shows warnings for them. Requires `postprocess=true`.
 - `quiet=false`: silence all warnings and informational messages emitted during parsing.
 """
 function read end
@@ -55,7 +57,7 @@ end
 
 read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
-function read(result_type, votfile; postprocess=true, unitful=false, strict=true, quiet=false)
+function read(result_type, votfile; postprocess=true, unitful=true, strict=true, quiet=false)
     with_logger(quiet ? NullLogger() : current_logger()) do
         tblx = tblxml(votfile; strict)
         colmetas = get_colmetas(tblx)
@@ -176,8 +178,36 @@ julianday_numarr(x::AbstractArray) = map(julianday_numarr, x)
 yeardecimal_numarr(x::Number) = isnan(x) ? missing : yeardecimal(x)
 yeardecimal_numarr(x::AbstractArray) = map(yeardecimal_numarr, x)
 
-unit_vot_to_jl(_, _) = error("Load Unitful.jl to use units")
-unit_jl_to_vot(_) = error("Load Unitful.jl to use units")
+function unit_vot_to_jl(col, vot_unit::AbstractString)
+    (;unit, valuefn) = parse_unit(vot_unit, VOUnit())
+    unit === NoUnits && return col
+    result = valuefn.(col) .* unit
+    # broadcasting all-missing columns loses the numeric type (Missing .* u"m" → Vector{Missing}), fix it
+    if Missing <: eltype(col)
+        @assert eltype(col) !== Missing
+        NMT = nonmissingtype(eltype(col))
+        sample_val = NMT <: AbstractArray ? [one(eltype(NMT))] : one(NMT)
+        QT = typeof(valuefn(sample_val) * unit)
+        result = convert(Vector{Union{Missing, QT}}, result)
+    end
+    return result
+end
+
+function jl2votype(::Type{QT}) where {T, QT <: Quantity{T}}
+    inner = jl2votype(T)
+    return (inner..., unit=unit_string(Unitful.unit(QT)))
+end
+
+function jl2votype(::Type{GT}) where {T, GT <: Unitful.Gain{<:Any, <:Any, T}}
+    inner = jl2votype(T)
+    return (inner..., unit=unit_string(Unitful.logunit(GT)))
+end
+
+_unparse(x::Quantity) = _unparse(ustrip(x))
+_unparse(x::Unitful.Gain) = _unparse(ustrip(x))
+
+# XXX: piracy, need to upstream
+Base.:*(::Missing, ::Unitful.MixedUnits) = missing
 
 function _filltable!(cols, tblx)
     datax = @p tblx  _findall("ns:DATA", __, _namespaces(__))  only
@@ -358,7 +388,8 @@ end
 
 using PrecompileTools
 @compile_workload begin
-    read(joinpath(@__DIR__, "../test/data/alltypes"))
+    read(joinpath(@__DIR__, "../test/data/alltypes"); unitful=false)
+    read(joinpath(@__DIR__, "../test/data/alltypes"); unitful=true, quiet=true)  # quiet because uparse() fails in precompilation
 end
 
 end
