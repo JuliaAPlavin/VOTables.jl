@@ -238,6 +238,8 @@ end
     @test tbl.g_transit_flux[1] isa Vector{typeof(1.0u"s^-1")}
     @test length(tbl.g_transit_time[1]) == 50
     @test length(tbl.g_transit_flux[1]) == 50
+    @test tbl.g_transit_time[1][1] == DateTime("2014-08-08T16:12:54.464")
+    @test tbl.g_transit_flux[1][1] ≈ 213.96326742986244u"s^-1"
 end
 
 @testitem "quiet option" begin
