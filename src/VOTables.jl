@@ -111,33 +111,43 @@ end
 
 write(votfile) = Base.Fix1(write, votfile)
 function write(votfile, tbl)
-    doc = XMLDocument()
+    io = votfile isa IO ? votfile : open(votfile, "w")
+    try
+        _write_xml(io, tbl)
+    finally
+        votfile isa IO || close(io)
+    end
+end
 
-    votablex = ElementNode("VOTABLE")
-    votablex["version"] = "1.4"
-    votablex["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-    votablex["xmlns"] = "http://www.ivoa.net/xml/VOTable/v1.3"
-    votablex["xsi:schemaLocation"] = "http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3"
-    setroot!(doc, votablex)
+_xml_escape(s::AbstractString) = replace(s, '&' => "&amp;", '<' => "&lt;", '>' => "&gt;")
 
-    resourcex = addelement!(votablex, "RESOURCE")
-    tablex = addelement!(resourcex, "TABLE")
+function _write_field(io::IO, colname, col)
+    fieldx = ElementNode("FIELD")
+    fieldx["name"] = string(colname)
+    for (k, v) in jl2votype(eltype(col)) |> pairs
+        fieldx[String(k)] = v
+    end
+    print(io, fieldx)
+end
+
+function _write_xml(io::IO, tbl)
+    print(io, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+    print(io, "<VOTABLE version=\"1.4\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.ivoa.net/xml/VOTable/v1.3\" xsi:schemaLocation=\"http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3\">")
+    print(io, "<RESOURCE><TABLE>")
     cols = Tables.columns(tbl)
     for (colname, col) in pairs(cols)
-        fieldx = addelement!(tablex, "FIELD")
-        fieldx["name"] = colname
-        for (k, v) in jl2votype(eltype(col)) |> pairs
-            fieldx[String(k)] = v
-        end
+        _write_field(io, colname, col)
     end
-    tabledatax = addelement!(addelement!(tablex, "DATA"), "TABLEDATA")
-    for r in Tables.rowtable(tbl)
-        trx = addelement!(tabledatax, "TR")
-        for val in r
-            addelement!(trx, "TD", _unparse(val))
+    print(io, "<DATA><TABLEDATA>")
+    for row in StructArrays.fromtable(tbl)
+        print(io, "<TR>")
+        for val in row
+            print(io, "<TD>", _xml_escape(_unparse(val)), "</TD>")
         end
+        print(io, "</TR>")
     end
-    EzXML.write(votfile, doc)
+    print(io, "</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>")
+    print(io, "\n")
 end
 
 
