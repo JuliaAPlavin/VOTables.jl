@@ -76,10 +76,28 @@ end
 
 read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
+const _XML_PARSE_HUGE = Cint(1 << 19)
+
+# Equivalent to `new(ptr, input)` inside EzXML.StreamReader, bypassing the inner constructor's assert.
+@eval _new_streamreader(ptr, input) = $(Expr(:new, :(EzXML.StreamReader), :ptr, :input))
+
+function _streamreader(io::IO)
+    # Like EzXML.StreamReader(io) but with XML_PARSE_HUGE to handle large text nodes (binary VOTable).
+    # Mirrors the inner constructor at EzXML/src/streamreader.jl — the only difference is `options`.
+    readcb = EzXML.make_read_callback(EzXML.StreamReader)
+    reader = _new_streamreader(Ptr{EzXML._TextReader}(C_NULL), io)
+    reader.ptr = EzXML.@check ccall(
+        (:xmlReaderForIO, EzXML.libxml2),
+        Ptr{EzXML._TextReader},
+        (Ptr{Cvoid}, Ptr{Cvoid}, Ref{EzXML.StreamReader}, Cstring, Cstring, Cint),
+        readcb, C_NULL, reader, C_NULL, C_NULL, _XML_PARSE_HUGE) != C_NULL
+    return reader
+end
+
 function read(result_type, votfile; postprocess=true, unitful=true, strict=true, quiet=false)
     with_logger(quiet ? NullLogger() : current_logger()) do
         io = votfile isa IO ? votfile : open(votfile)
-        reader = EzXML.StreamReader(io)
+        reader = _streamreader(io)
         try
             colmetas, colnames, timesys, colarrays = _stream_header!(reader; strict)
             _filltable_stream!(colarrays, colmetas, reader; strict)

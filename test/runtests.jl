@@ -226,6 +226,36 @@ end
     @test isequal(tbl[3], (s_byte=2, s_short=missing, s_int=2, s_long=2, s_float=2.0f0, s_double=2.0, s_string="two", s_boolean=false, f_byte=[2, 3, 4], f_short=missing, f_int=[2, 3, 4], f_long=[2, 3, 4], f_float=[2, NaN, 4.5], f_double=[2,NaN, 4.5], f_boolean=[false, true, false], v_byte=[2], v_short=missing, v_int=[2], v_long=[2], v_float=[2], v_double=[2], v_boolean=[false], m_int=[1002, 1003, 2002, 2003, 3002, 3003, 4002, 4003], m_double=missing))
 end
 
+@testitem "read binary - XML_PARSE_HUGE" begin
+    using Base64
+
+    nrows = 1_200_000
+    vals = collect(Float64, 1:nrows)
+
+    # Big-endian bytes (VOTable BINARY spec = network byte order)
+    raw_bytes = reinterpret(UInt8, hton.(vals))
+    b64 = base64encode(raw_bytes)
+    @assert length(b64) > 10_000_000  # must exceed libxml2 default text node limit
+
+    xml = string(
+        """<?xml version="1.0" encoding="UTF-8"?>""",
+        """<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">""",
+        """<RESOURCE><TABLE>""",
+        """<FIELD name="x" datatype="double"/>""",
+        """<DATA><BINARY>""",
+        """<STREAM encoding="base64">""", b64, """</STREAM>""",
+        """</BINARY></DATA>""",
+        """</TABLE></RESOURCE></VOTABLE>"""
+    )
+
+    tbl = VOTables.read(IOBuffer(xml); unitful=false)
+    @test length(tbl) == nrows
+    @test tbl.x[1] === 1.0
+    @test tbl.x[500_000] === 500_000.0
+    @test tbl.x[end] === Float64(nrows)
+    @test tbl.x == vals
+end
+
 @testitem "read arrays with units" begin
     using Unitful, UnitfulAstro
     using Dates
