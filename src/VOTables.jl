@@ -282,7 +282,7 @@ function _stream_header!(reader::EzXML.StreamReader; strict::Bool)
         elseif nm == "INFO"
             node = expandtree(reader)
             if haskey(node, "name") && haskey(node, "value") &&
-               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) == "ERROR"
+               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) ∈ ("ERROR", "OVERFLOW")
                 push!(error_messages, nodecontent(node))
             end
         elseif nm == "TABLE"
@@ -348,7 +348,7 @@ function _check_trailing_errors!(reader::EzXML.StreamReader; strict::Bool)
         if nm == "INFO"
             node = expandtree(reader)
             if haskey(node, "name") && haskey(node, "value") &&
-               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) == "ERROR"
+               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) ∈ ("ERROR", "OVERFLOW")
                 push!(error_messages, nodecontent(node))
             end
         end
