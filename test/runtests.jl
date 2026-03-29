@@ -540,7 +540,7 @@ end
 
 @testitem "astropy: no_resource" begin
     # minimal VOTable with no RESOURCE element
-    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/no_resource.xml")); true)
+    @test_throws "has no tables" VOTables.read(joinpath(@__DIR__, "data/astropy/no_resource.xml"))
 end
 
 @testitem "astropy: no_field_not_empty_table" begin
@@ -555,7 +555,7 @@ end
 
 @testitem "astropy: irsa-nph-error" begin
     # error-only VOTable (no tables)
-    @test_broken (VOTables.read(joinpath(@__DIR__, "data/astropy/irsa-nph-error.xml")); true)
+    @test_throws "has no tables" VOTables.read(joinpath(@__DIR__, "data/astropy/irsa-nph-error.xml"))
 end
 
 @testitem "astropy: regression" begin
