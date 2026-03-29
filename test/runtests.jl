@@ -340,6 +340,7 @@ end
             @testset "iobuffer" begin
                 iob = IOBuffer()
                 tbl |> tbl_f |> VOTables.write(iob)
+                seekstart(iob)
                 read_c = VOTables.read(iob; unitful=true) |> Tables.columntable
                 @test isequal(read_c, tbl_c)
                 @test map(eltype, read_c) == map(eltype, tbl_c)

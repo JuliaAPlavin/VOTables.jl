@@ -4,7 +4,6 @@ using EzXML
 using Base64
 using StringViews
 using UnsafeArrays: UnsafeArray
-using Mmap
 using StructArrays
 using Tables
 using Dictionaries
@@ -61,15 +60,6 @@ function _parse_timeorigin(s::AbstractString)
     return parse(Float64, s)
 end
 
-function _parse_timesys(resource_node)
-    ns = _namespaces(resource_node)
-    nodes = _findall("ns:TIMESYS", resource_node, ns)
-    dictionary(map(nodes) do node
-        id = node["ID"]
-        timeorigin = haskey(node, "timeorigin") ? _parse_timeorigin(node["timeorigin"]) : 0.0
-        id => timeorigin
-    end)
-end
 
 function _resolve_timeorigin(attrs, timesys)
     ref = get(attrs, :ref, nothing)
@@ -88,30 +78,33 @@ read(votfile; kwargs...) = read(StructArray, votfile; kwargs...)
 
 function read(result_type, votfile; postprocess=true, unitful=true, strict=true, quiet=false)
     with_logger(quiet ? NullLogger() : current_logger()) do
-        tblx = tblxml(votfile; strict)
-        timesys = _parse_timesys(parentnode(tblx))
-        colmetas = get_colmetas(tblx)
-        colnames = @p colmetas map(Symbol(_.attrs[:name]))
-        colarrays = @p colmetas map(Union{_.jltype, Missing}[])
-        @p let
-            colarrays
-            _filltable!(__, tblx)
-            @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
-            postprocess ? modify(__, ∗, colmetas) do col, (;attrs)
-                timeorigin = _resolve_timeorigin(attrs, timesys)
-                postprocess_col(col, attrs; unitful, timeorigin)
-            end : __
-            modify(__, ∗, colmetas) do col, (;attrs)
-                MetadataArray(
-                    col,
-                    _filter(!isnothing, (
-                        description=get(attrs, :description, nothing),
-                        ucd=get(attrs, :ucd, nothing),
-                        unit_vot=get(attrs, :unit, nothing)
-                    )),
-                )
+        io = votfile isa IO ? votfile : open(votfile)
+        reader = EzXML.StreamReader(io)
+        try
+            colmetas, colnames, timesys, colarrays = _stream_header!(reader; strict)
+            _filltable_stream!(colarrays, colmetas, reader; strict)
+            @p let
+                colarrays
+                @modify(col -> any(ismissing, col) ? col : convert(Vector{nonmissingtype(eltype(col))}, col), __[∗])  # narrow types, removing Missing unless actually present
+                postprocess ? modify(__, ∗, colmetas) do col, (;attrs)
+                    timeorigin = _resolve_timeorigin(attrs, timesys)
+                    postprocess_col(col, attrs; unitful, timeorigin)
+                end : __
+                modify(__, ∗, colmetas) do col, (;attrs)
+                    MetadataArray(
+                        col,
+                        _filter(!isnothing, (
+                            description=get(attrs, :description, nothing),
+                            ucd=get(attrs, :ucd, nothing),
+                            unit_vot=get(attrs, :unit, nothing)
+                        )),
+                    )
+                end
+                _container_from_components(result_type, colnames .=> __)
             end
-            _container_from_components(result_type, colnames .=> __)
+        finally
+            close(reader)
+            votfile isa IO || close(io)
         end
     end
 end
@@ -239,21 +232,107 @@ _unparse(x::Unitful.Gain) = _unparse(ustrip(x))
 # XXX: piracy, need to upstream
 Base.:*(::Missing, ::Unitful.MixedUnits) = missing
 
-function _filltable!(cols, tblx)
-    datax = @p tblx  _findall("ns:DATA", __, _namespaces(__))  only
-    childx = first(eachelement(datax))
-    _filltable!(cols, tblx, Val(Symbol(nodename(childx))))
+function _stream_header!(reader::EzXML.StreamReader; strict::Bool)
+    # Process each expanded node immediately — expandtree() nodes are only valid
+    # until the reader advances, so we extract all needed data in-place.
+    colmetas = ColMeta[]
+    timesys_entries = Pair{String,Float64}[]
+    error_messages = String[]
+    found_table = false
+
+    for typ in reader
+        typ == EzXML.READER_ELEMENT || continue
+        nm = nodename_sv_reader(reader)
+        if nm == "FIELD"
+            node = expandtree(reader)
+            push!(colmetas, _colmeta_from_node(node))
+        elseif nm == "TIMESYS"
+            node = expandtree(reader)
+            id = node["ID"]
+            timeorigin = haskey(node, "timeorigin") ? _parse_timeorigin(node["timeorigin"]) : 0.0
+            push!(timesys_entries, id => timeorigin)
+        elseif nm == "INFO"
+            node = expandtree(reader)
+            if haskey(node, "name") && haskey(node, "value") &&
+               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) == "ERROR"
+                push!(error_messages, nodecontent(node))
+            end
+        elseif nm == "TABLE"
+            found_table = true
+        elseif nm == "DATA"
+            break
+        end
+    end
+
+    if !found_table && isempty(colmetas)
+        if isempty(error_messages)
+            error("VOTable file has no tables")
+        else
+            error("VOTable file has no tables, see original errors ($(length(error_messages))) below.\n$(join(error_messages, "\n\n"))")
+        end
+    end
+    if !isempty(error_messages)
+        strict ?
+            throw(VOTableException("VOTable file contains data, but errors have occurred. Pass `strict=false` to turn this exception into a warning.\n$(join(error_messages, "\n\n"))")) :
+            @error "VOTable file contains data, but errors have occurred. Pass `strict=true` to turn this warning into an exception." errors=error_messages
+    end
+
+    timesys = dictionary(timesys_entries)
+    colnames = @p colmetas map(Symbol(_.attrs[:name]))
+    colarrays = @p colmetas map(Union{_.jltype, Missing}[])
+
+    return colmetas, colnames, timesys, colarrays
 end
 
-_filltable!(cols, tblx, ::Val{F}) where F = error("Unsupported table data element: $F")
-
-function _filltable!(cols, tblx, ::Val{:BINARY2})
-    colmetas = get_colmetas(tblx)
-    streamx = @p let
-        tblx
-        _findall("ns:DATA/ns:BINARY2/ns:STREAM", __, _namespaces(__))
-        only
+function _filltable_stream!(cols, colmetas, reader::EzXML.StreamReader; strict::Bool)
+    # Detect format from first child element of DATA
+    for typ in reader
+        typ == EzXML.READER_ELEMENT || continue
+        nm = nodename_sv_reader(reader)
+        if nm == "TABLEDATA"
+            _filltable_tabledata_stream!(cols, colmetas, reader)
+            _check_trailing_errors!(reader; strict)
+            return cols
+        elseif nm ∈ ("BINARY", "BINARY2")
+            format = Symbol(nm)
+            # Find STREAM element and expand it
+            for typ2 in reader
+                typ2 == EzXML.READER_ELEMENT || continue
+                nm2 = nodename_sv_reader(reader)
+                if nm2 == "STREAM"
+                    streamx = expandtree(reader)
+                    _filltable_binary!(cols, colmetas, streamx, Val(format))
+                    _check_trailing_errors!(reader; strict)
+                    return cols
+                end
+            end
+            error("No STREAM content found for BINARY/BINARY2 data")
+        end
     end
+    error("No DATA content found")
+end
+
+function _check_trailing_errors!(reader::EzXML.StreamReader; strict::Bool)
+    error_messages = String[]
+    for typ in reader
+        typ == EzXML.READER_ELEMENT || continue
+        nm = nodename_sv_reader(reader)
+        if nm == "INFO"
+            node = expandtree(reader)
+            if haskey(node, "name") && haskey(node, "value") &&
+               uppercase(node["name"]) == "QUERY_STATUS" && uppercase(node["value"]) == "ERROR"
+                push!(error_messages, nodecontent(node))
+            end
+        end
+    end
+    if !isempty(error_messages)
+        strict ?
+            throw(VOTableException("VOTable file contains data, but errors have occurred. Pass `strict=false` to turn this exception into a warning.\n$(join(error_messages, "\n\n"))")) :
+            @error "VOTable file contains data, but errors have occurred. Pass `strict=true` to turn this warning into an exception." errors=error_messages
+    end
+end
+
+function _filltable_binary!(cols, colmetas, streamx, ::Val{:BINARY2})
     streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
     dataraw = nodecontent_sv(base64decode, streamx)
     nnullbytes = let ncols = length(colmetas)
@@ -286,13 +365,7 @@ function _filltable!(cols, tblx, ::Val{:BINARY2})
     return cols
 end
 
-function _filltable!(cols, tblx, ::Val{:BINARY})
-    colmetas = get_colmetas(tblx)
-    streamx = @p let
-        tblx
-        _findall("ns:DATA/ns:BINARY/ns:STREAM", __, _namespaces(__))
-        only
-    end
+function _filltable_binary!(cols, colmetas, streamx, ::Val{:BINARY})
     streamx["encoding"] == "base64" || error("Unsupported encoding: $(streamx["encoding"])")
     dataraw = nodecontent_sv(base64decode, streamx)
     i = 1
@@ -324,64 +397,57 @@ function _filltable!(cols, tblx, ::Val{:BINARY})
     return cols
 end
 
-function _filltable!(cols, tblx, ::Val{:TABLEDATA})
-    tabledatax = @p let
-        tblx
-        @aside ns = _namespaces(__)
-        _findall("ns:DATA/ns:TABLEDATA", __, ns)
-        only
-    end
-    for col in cols
-        sizehint!(col, EzXML.countelements(tabledatax))
-    end
-    for tr in eachelementptr(tabledatax)
-        for (col, td) in zip(cols, eachelementptr(tr))
-            @assert nodename_sv(td) == "TD"
+function _filltable_tabledata_stream!(cols, colmetas, reader::EzXML.StreamReader)
+    ncols = length(cols)
+    col_idx = 0
+    in_td = false
+
+    for typ in reader
+        if typ == EzXML.READER_ELEMENT
+            nm = nodename_sv_reader(reader)
+            if nm == "TR"
+                col_idx = 0
+            elseif nm == "TD"
+                col_idx += 1
+                if ccall((:xmlTextReaderIsEmptyElement, EzXML.libxml2), Cint, (Ptr{Cvoid},), reader) == 1
+                    push!(cols[col_idx], _parse(eltype(cols[col_idx]), ""))
+                else
+                    in_td = true
+                end
+            end
+        elseif typ ∈ (EzXML.READER_TEXT, EzXML.READER_CDATA) && in_td
+            in_td = false
+            col = cols[col_idx]
+            content = nodevalue_sv_reader(reader)
             @multiifs(
                 (Bool, UInt8, Char, String, Int16, Int32, Int64, Float32, Float64, ComplexF32, ComplexF64, Vector{Float64}),
                 col isa AbstractVector{Union{Missing, _}},
-                nodecontent_sv(content -> push!(col, _parse(eltype(col), content)), td),
+                push!(col, _parse(eltype(col), content)),
                 let
                     @warn "VOTable parsing can be slow due to runtime dispatch. Got eltype(col) == $(eltype(col)) that isn't handled by the fast path." maxlog=1
-                    nodecontent_sv(content -> push!(col, _parse(eltype(col), content)), td)
+                    push!(col, _parse(eltype(col), content))
                 end
             )
+        elseif typ == EzXML.READER_SIGNIFICANT_WHITESPACE
+            # whitespace-only text nodes (indentation) — ignore
+        elseif typ == EzXML.READER_END_ELEMENT
+            nm = nodename_sv_reader(reader)
+            if nm == "TD"
+                if in_td
+                    col = cols[col_idx]
+                    push!(col, _parse(eltype(col), ""))
+                    in_td = false
+                end
+            elseif nm == "TABLEDATA"
+                break
+            end
+        elseif typ ∈ (EzXML.READER_COMMENT, EzXML.READER_PROCESSING_INSTRUCTION)
+            # standard XML constructs — ignore
+        else
+            @warn "Unexpected XML node type during TABLEDATA parsing" typ in_td maxlog=1
         end
     end
     return cols
-end
-
-function tblxml(votfile; strict::Bool)
-    xml = if votfile isa IO
-        parsexml(votfile)
-    else # filename
-        isfile(votfile) || throw(SystemError("""opening file "$votfile": No such file or directory"""))
-        # xml = @p Base.read(votfile, String) |> parsexml
-        @p StringView(mmap(votfile)) |> parsexml
-    end
-    tables = @p let 
-        xml
-        root
-        @aside ns = _namespaces(__)
-        _findall("ns:RESOURCE/ns:TABLE", __, ns)
-    end
-    infos = @p xml |> root |> _findall("ns:RESOURCE/ns:INFO", __, _namespaces(__))
-    errorinfos = @p infos |> filter(uppercase(_["name"]) == "QUERY_STATUS" && uppercase(_["value"]) == "ERROR")
-    if isempty(tables)
-        if isempty(errorinfos)
-            error("VOTable file has no tables")
-        else
-            error("VOTable file has no tables, see original errors ($(length(errorinfos))) below.\n$(join(nodecontent.(errorinfos), "\n\n"))")
-        end
-    end
-    if !isempty(errorinfos)
-        strict ?
-            throw(VOTableException("VOTable file contains data, but errors have occurred. Pass `strict=false` to turn this exception into a warning.\n$(join(nodecontent.(errorinfos), "\n\n"))")) :
-            @error "VOTable file contains data, but errors have occurred. Pass `strict=true` to turn this warning into an exception." errors=nodecontent.(errorinfos)
-    end
-    length(tables) == 1 ?
-        only(tables) :
-        error("VOTable files with multiple tables not supported yet")
 end
 
 description(tblxml) = @p let
@@ -391,29 +457,28 @@ description(tblxml) = @p let
     nodecontent
 end
 
-get_colmetas(tblxml) = @p let
-    tblxml
-    @aside ns = _namespaces(__)
-    _findall("ns:FIELD", __, ns)
-    map() do fieldxml
-        attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
-        basetype = TYPE_VO_TO_JL[attrs[:datatype]]
-        jltype = vo2jltype(attrs)
-        typesize = TYPE_VO_TO_NBYTES[attrs[:datatype]]
-        fixwidth = vo2nbytes_fixwidth(attrs)
-        nullvalues = @p let 
-            fieldxml
-            _findall("ns:VALUES", __, ns)
-            filter(haskey(_, "null"))
-            map(_["null"])
-            map(try parse(basetype, _) catch err nothing end)
+function _colmeta_from_node(fieldxml::EzXML.Node)
+    attrs = @p attributes(fieldxml) |> map(Symbol(nodename(_)) => nodecontent(_)) |> dictionary
+    basetype = TYPE_VO_TO_JL[attrs[:datatype]]
+    jltype = vo2jltype(attrs)
+    typesize = TYPE_VO_TO_NBYTES[attrs[:datatype]]
+    fixwidth = vo2nbytes_fixwidth(attrs)
+    # Walk children directly (expandtree nodes don't support XPath)
+    nullvalues = Any[]
+    desc = nothing
+    for child in eachelement(fieldxml)
+        cname = nodename(child)
+        if cname == "VALUES" && haskey(child, "null")
+            val = try parse(basetype, child["null"]) catch err nothing end
+            push!(nullvalues, val)
+        elseif cname == "DESCRIPTION"
+            desc = nodecontent(child)
         end
-        length(nullvalues) > 1 && @warn "Multiple null values found" column=attrs[:name] nullvalues
-        nullvalue = @oget first(nullvalues)
-        desc = @p fieldxml |> _findall("ns:DESCRIPTION", __, ns) |> maybe(nodecontent ∘ only)(__)
-        isnothing(desc) || insert!(attrs, :description, desc)
-        return ColMeta(; attrs, basetype, jltype, typesize, fixwidth, nullvalue)
     end
+    length(nullvalues) > 1 && @warn "Multiple null values found" column=attrs[:name] nullvalues
+    nullvalue = @oget first(nullvalues)
+    isnothing(desc) || insert!(attrs, :description, desc)
+    return ColMeta(; attrs, basetype, jltype, typesize, fixwidth, nullvalue)
 end
 
 using PrecompileTools
