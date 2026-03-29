@@ -42,7 +42,7 @@ end
     votfile = tempname()
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
-    tbl = VOTables.read(votfile; unitful=false)
+    tbl = VOTables.read(votfile; unitful=false, strict=false)
     @test length(tbl) == 100
     @test tbl.recno::AbstractVector{Int32} == 1:100
     @test eltype(tbl.Tb) == Float32
@@ -58,18 +58,18 @@ end
     @test colmetadata(tbl, :ID) == (description = "Source name in truncated B1950.0 coordinates", ucd = "meta.id;meta.main")
     @test colmetadata(tbl)[:Epoch] == colmetadata(tbl, :Epoch)
 
-    @test isequal(Tables.columns(VOTables.read(DictArray, votfile; unitful=false)), Tables.columns(DictArray(tbl)))
-    @test isequal(Tables.columns(VOTables.read(StructArray, votfile; unitful=false)), Tables.columns(tbl))
+    @test isequal(Tables.columns(VOTables.read(DictArray, votfile; unitful=false, strict=false)), Tables.columns(DictArray(tbl)))
+    @test isequal(Tables.columns(VOTables.read(StructArray, votfile; unitful=false, strict=false)), Tables.columns(tbl))
 
     using Unitful
-    tbl = VOTables.read(votfile; unitful=true)
+    tbl = VOTables.read(votfile; unitful=true, strict=false)
     @test tbl.recno::AbstractVector{Int32} == 1:100
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === (10^11.682f0)u"K"
     # @test tbl[5].Bmaj == 0.82f0  # only passes with ]test, fails in VSCode test runner
 
     using UnitfulAstro, UnitfulAngles
-    tbl = VOTables.read(votfile; unitful=true)
+    tbl = VOTables.read(votfile; unitful=true, strict=false)
     @test tbl[5].Epoch == Date(2008, 5, 1)
     @test tbl[5].Tb === (10^11.682f0)u"K"
     @test tbl[5].Bmaj == 0.82f0u"mas"
@@ -280,7 +280,7 @@ end
     run(pipeline(`gunzip -ck $votgzfile`, stdout=votfile))
 
     # with quiet=true: no messages
-    @test_logs VOTables.read(votfile; unitful=true, quiet=true)
+    @test_logs VOTables.read(votfile; unitful=true, quiet=true, strict=false)
 end
 
 @testitem "read error" begin
@@ -541,7 +541,8 @@ end
 
 @testitem "astropy: vizier_b2" begin
     using Unitful, UnitfulAstro, UnitfulAngles
-    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"))
+    @test_throws "truncated result" VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"))
+    tbl = VOTables.read(joinpath(@__DIR__, "data/astropy/vizier_b2_votable.xml"); strict=false)
     @test length(tbl) == 20
     @test length(propertynames(tbl)) == 12
     @test tbl[1].MajDiam == 100.0f0u"arcsecond"
