@@ -188,6 +188,12 @@ end
 function postprocess_col(col, attrs; unitful::Bool, timeorigin::Real=0)
     ucds = split(get(attrs, :ucd, ""), ";")
     unit = get(attrs, :unit, nothing)
+    # An empty unit attribute (unit="") is semantically equivalent to no unit.
+    # Some services emit unit="" on non-numeric columns rather than omitting the
+    # attribute entirely. Without this normalization, the empty string bypasses
+    # the `isnothing(unit)` guards below and causes spurious warnings for every
+    # string column that carries unit="" (common in SVO and other VO services).
+    unit == "" && (unit = nothing)
     if "time.epoch" in ucds
         if nonmissingtype(eltype(col)) <: AbstractString && unit == "'Y:M:D'"
             map(x -> ismissing(x) ? missing : parse(Date, x, dateformat"Y-m-d"), col)
