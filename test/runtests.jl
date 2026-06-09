@@ -283,6 +283,31 @@ end
     @test_logs VOTables.read(votfile; unitful=true, quiet=true, strict=false)
 end
 
+@testitem "empty unit string" begin
+    # unit="" is semantically "no unit" and should not warn on non-numeric columns.
+    # Regression test for SVO Filter Profile Service, which emits unit="" on every
+    # FIELD element including string columns like filterID and PhotSystem.
+    xml = """
+    <?xml version="1.0"?>
+    <VOTABLE version="1.1">
+      <RESOURCE type="results">
+        <TABLE>
+          <FIELD name="filterID" datatype="char" arraysize="*" unit=""/>
+          <DATA>
+            <TABLEDATA>
+              <TR><TD>SLOAN/SDSS.g</TD></TR>
+              <TR><TD>SLOAN/SDSS.r</TD></TR>
+            </TABLEDATA>
+          </DATA>
+        </TABLE>
+      </RESOURCE>
+    </VOTABLE>"""
+
+    # Should parse without warnings from non-numeric column with unit=""
+    tbl = @test_logs VOTables.read(IOBuffer(xml); unitful=true)
+    @test tbl.filterID == ["SLOAN/SDSS.g", "SLOAN/SDSS.r"]
+end
+
 @testitem "read error" begin
     using Dates
     using Unitful, UnitfulAstro, UnitfulAngles
