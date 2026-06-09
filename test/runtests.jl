@@ -284,28 +284,39 @@ end
 end
 
 @testitem "empty unit string" begin
-    # unit="" is semantically "no unit" and should not warn on non-numeric columns.
-    # Regression test for SVO Filter Profile Service, which emits unit="" on every
-    # FIELD element including string columns like filterID and PhotSystem.
+    using Unitful, UnitfulAstro, UnitfulAngles
+    using StructArrays.Tables
+    # unit="" is semantically "no unit" (the spec fixes unit="" for INFO elements), so it must
+    # behave identically to an omitted unit: no warning on string columns, and no unit_vot in the
+    # column metadata. Regression test for the SVO Filter Profile Service, which emits unit="" on
+    # every FIELD element including string columns like filterID and PhotSystem.
     xml = """
     <?xml version="1.0"?>
     <VOTABLE version="1.1">
       <RESOURCE type="results">
         <TABLE>
           <FIELD name="filterID" datatype="char" arraysize="*" unit=""/>
+          <FIELD name="WavelengthRef" datatype="double" unit=""/>
+          <FIELD name="Width" datatype="double" unit="Angstrom"/>
           <DATA>
             <TABLEDATA>
-              <TR><TD>SLOAN/SDSS.g</TD></TR>
-              <TR><TD>SLOAN/SDSS.r</TD></TR>
+              <TR><TD>SLOAN/SDSS.g</TD><TD>4770.0</TD><TD>1380.0</TD></TR>
+              <TR><TD>SLOAN/SDSS.r</TD><TD>6231.0</TD><TD>1530.0</TD></TR>
             </TABLEDATA>
           </DATA>
         </TABLE>
       </RESOURCE>
     </VOTABLE>"""
 
-    # Should parse without warnings from non-numeric column with unit=""
+    # No warnings, and unit="" leaves no trace in the data or metadata of either column kind
     tbl = @test_logs VOTables.read(IOBuffer(xml); unitful=true)
     @test tbl.filterID == ["SLOAN/SDSS.g", "SLOAN/SDSS.r"]
+    @test metadata(tbl.filterID) == (;)
+    @test tbl.WavelengthRef == [4770.0, 6231.0] && eltype(tbl.WavelengthRef) == Float64
+    @test metadata(tbl.WavelengthRef) == (;)
+    # a genuine unit on a sibling column is unaffected
+    @test tbl.Width == [1380.0, 1530.0]u"Å"
+    @test metadata(tbl.Width) == (unit_vot = "Angstrom",)
 end
 
 @testitem "read error" begin
