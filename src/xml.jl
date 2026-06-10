@@ -15,7 +15,7 @@ function nodename_sv(ptr::Ptr{EzXML._Node})
     if node_str.name == C_NULL
         throw(ArgumentError("no node name"))
     end
-    unsafe_wrap(StringView, node_str.name)
+    unsafe_stringview(node_str.name)
 end
 
 nodecontent_sv(f, node::EzXML.Node) = nodecontent_sv(f, node.ptr)
@@ -25,7 +25,7 @@ function nodecontent_sv(f, ptr::Ptr{EzXML._Node})
         Cstring,
         (Ptr{Cvoid},),
         ptr) != C_NULL
-    str = unsafe_wrap(StringView, str_ptr)
+    str = unsafe_stringview(str_ptr)
     res = try
         f(str)
     finally
@@ -75,11 +75,11 @@ end
 function nodename_sv_reader(reader::EzXML.StreamReader)
     ptr = ccall((:xmlTextReaderConstName, EzXML.libxml2), Cstring, (Ptr{Cvoid},), reader)
     ptr == C_NULL && return nothing
-    unsafe_wrap(StringView, ptr)
+    unsafe_stringview(ptr)
 end
 
 function nodevalue_sv_reader(reader::EzXML.StreamReader)
     ptr = ccall((:xmlTextReaderConstValue, EzXML.libxml2), Cstring, (Ptr{Cvoid},), reader)
     ptr == C_NULL && return nothing
-    unsafe_wrap(StringView, ptr)
+    unsafe_stringview(ptr)
 end
