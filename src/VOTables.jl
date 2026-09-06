@@ -259,9 +259,6 @@ end
 _unparse(x::Quantity) = _unparse(ustrip(x))
 _unparse(x::Unitful.Gain) = _unparse(ustrip(x))
 
-# XXX: piracy, need to upstream
-Base.:*(::Missing, ::Unitful.MixedUnits) = missing
-
 function _stream_header!(reader::EzXML.StreamReader; strict::Bool)
     # Process each expanded node immediately — expandtree() nodes are only valid
     # until the reader advances, so we extract all needed data in-place.
