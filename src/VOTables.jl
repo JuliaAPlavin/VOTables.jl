@@ -2,7 +2,7 @@ module VOTables
 
 using EzXML
 using Base64
-using StringViews
+using StringViews: StringView
 using UnsafeArrays: UnsafeArray
 using StructArrays
 using Tables
